@@ -1,0 +1,19 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema#",
+    "type": "object",
+    "description": "Supplier",
+    "properties": {
+        "_id": {
+            "type": "string",
+            "example": "57c4b1ba1abb0114001963c5"
+        },
+        "__v": "number",
+        "created": "date",
+        "updated": "date",
+        "description": "string",
+        "name": {
+            "type": "string",
+            "example": "My Supplier"
+        }
+    }
+}

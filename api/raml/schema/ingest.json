@@ -1,0 +1,49 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema#",
+    "type": "object",
+    "description": "Ingest",
+    "properties": {
+        "_id": {
+            "type": "string",
+            "example": "57c4b1ba1abb0114001963c5"
+        },
+        "__v": "number",
+        "created": "date",
+        "updated": "date",
+        "description": "string",
+        "name": {
+            "type": "string",
+            "example": "My Ingest"
+        },
+        "supplier": [
+            {
+	            "type": "string",
+	            "example": "57c4b1ba1abb0114001963c5",
+	            "required": true
+            },
+            {
+	            "type": "object",
+	            "required": true,
+	            "properties": {
+	                "name": "string",
+	                "_id": "string"
+	            }
+            }
+        ],
+        "searchUrlTemplate": "string",
+	    "downloadUrl": "string",
+	    "formPostUrl": "string",
+        "formPostPayload": "string",
+        "searchSelectors": "string",
+        "productSelectors": "string",
+	    "securityType": {
+	        "type": "string",
+	        "enum": ["formPost", "none"],
+	        "default": "none"
+	    },
+	    "fieldMap": {
+	        "type": "string",
+	        "example": "foo: bar\nbing:bang"
+	    }
+	}
+}

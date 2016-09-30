@@ -1,0 +1,258 @@
+#%RAML 0.8
+
+title: NXFC Products
+baseUri: http://localhost:3000/api
+
+schemas:
+  - Supplier: !include schema/supplier.json
+  - Product: !include schema/product.json
+  - Ingest: !include schema/ingest.json
+  - IngestLog: !include schema/ingest-log.json
+
+resourceTypes:
+  - base:
+      get?:
+        responses: &standardResponses
+          200:
+            description: OK
+      put?:
+        responses: *standardResponses
+      post?:
+        responses: *standardResponses
+      delete?:
+        responses: *standardResponses
+  - collection:
+      type: base
+      get:
+      post:
+  - typedCollection:
+      type: collection
+      get:
+        responses:
+          200:
+            body:
+              application/json:
+                schema: <<collectionSchema>>
+      post:
+        body:
+          application/json:
+            schema: <<schema>>
+        responses:
+          200:
+            body:
+              application/json:
+                schema: <<schema>>
+  - typedMemberCollection:
+      type: collection
+      get:
+        description: List <<schema>>
+        responses:
+          200:
+            body:
+              application/json:
+                schema: |
+                  {
+                    "$schema": "http://json-schema.org/draft-03/schema#", 
+                    "type": "array", 
+                    "properties": { "$ref": "<<schema>>" } 
+                  }
+      post:
+        description: Create <<schema>>
+        body:
+          application/json:
+            schema: <<schema>>
+        responses:
+          200:
+            body:
+              application/json:
+                schema: <<schema>>
+  - member:
+      type: base
+      get:
+      put:
+      delete:
+  - typedMember:
+      type: member
+      get:
+        description: Read <<schema>>
+        responses:
+          200:
+            body:
+              application/json:
+                schema: <<schema>>
+      put:
+        description: Update <<schema>>
+        body:
+          application/json:
+            schema: <<schema>>
+        responses:
+          200:
+            body:
+              application/json:
+                schema: <<schema>>
+      delete:
+        description: Delete <<schema>>
+
+/suppliers:
+  displayName: Suppliers
+  type: { typedMemberCollection: { schema: Supplier } }
+  post:
+    body:
+      application/json:
+        example: |
+          {
+            "description": "Description of My Supplier",
+            "name": "My Supplier Name"
+          }
+  /{supplierId}:
+    type: { typedMember: { schema: Supplier } }
+
+/products:
+  displayName: Products
+  type: { typedMemberCollection: { schema: Product } }
+  post:
+    body:
+      application/json:
+        example: |
+          {
+            "description": "Description of My Product",
+            "name": "My Product Name",
+            "brand" : "My Brand",
+            "tag" : "My Tag"
+          }
+  /count:
+    get:
+      description: count of matching products
+      queryParameters: 
+        tags: 
+          description: comma delimited tag names
+          type: string
+        textsearch:
+          description: search string 
+          type: string
+      responses:
+        200:
+          body:
+            application/json:
+              example: |
+                { "count": 42 }
+  /tags:
+    get:
+      description: list of distinct product tags
+      responses:
+        200:
+          body:
+            application/json:
+              schema: |
+                {
+                  "$schema": "http://json-schema.org/draft-03/schema#",
+                  "type": "array",
+                  "properties": "string"
+                }
+  /brands:
+    get:
+      description: list of distinct product brands
+      responses:
+        200:
+          body:
+            application/json:
+              schema: |
+                {
+                  "$schema": "http://json-schema.org/draft-03/schema#",
+                  "type": "array",
+                  "properties": "string"
+                }
+  /suppliercodes:
+    get:
+      description: list of distinct product supplier codes
+      responses:
+        200:
+          body:
+            application/json:
+              schema: |
+                {
+                  "$schema": "http://json-schema.org/draft-03/schema#",
+                  "type": "array",
+                  "properties": "string"
+                }
+  /{productId}:
+    type: { typedMember: { schema: Product } }
+
+/ingests:
+  displayName: Ingests
+  type: { typedMemberCollection: { schema: Ingest } }
+  post:
+    body:
+      application/json:
+        example: |
+          {
+            "description": "Description of My Ingest",
+            "name": "My Ingest Name",
+            "supplier": "57c4b1ba1abb0114001963c5",
+            "downloadUrl": "http://api:3000/api.csv",
+            "fieldMap": "one: A\ntwo: B\nthree: C"
+          }
+  /{ingestId}:
+    type: { typedMember: { schema: Ingest } }
+    
+    /start-run:
+      get:
+        description: Kick off a run of this ingest
+        responses:
+          200:
+            body:
+              application/json:
+                schema: |
+                  {
+                    "$schema": "http://json-schema.org/draft-03/schema#", 
+                    "type": "object", 
+                    "properties": { 
+                      "ingestLog": "string",
+                      "status": {
+                        "type": "string",
+                        "enum": ["accepted","rejected"]
+                      }
+                    }
+                  }
+    /runs:
+      get:
+        description: Return the list of runs of this ingest
+        responses:
+          200:
+            body:
+              application/json:
+                schema: |
+                  {
+                    "$schema": "http://json-schema.org/draft-03/schema#", 
+                    "type": "array", 
+                    "properties": { "$ref": "IngestLog" } 
+                  }
+  /runs:
+    /{runId}:
+      displayName: Ingest Logs
+      get:
+        description: Each ingest run has a log
+        responses:
+          200:
+            body:
+              application/json:
+                schema: IngestLog
+      /log:
+        get:
+          description: Log entries for a specific ingest run
+          responses:
+            200:
+              body:
+                application/json:
+                  schema: |
+                    {
+                      "$schema": "http://json-schema.org/draft-03/schema#",
+                      "type": "array",
+                      "properties": {
+                        "message": {
+                           "type": "string",
+                           "required": "true"
+                        }
+                      }
+                    }
+      

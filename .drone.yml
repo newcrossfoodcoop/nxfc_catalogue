@@ -1,0 +1,39 @@
+cache:
+  mount:
+    - node_modules
+    - .git
+    - public/lib
+
+build:
+  main:
+    image: mhart/alpine-node:4.5
+    commands:
+      - npm install
+      - gulp test
+      - gulp build
+      - 
+    
+compose:
+  mongo:
+    image: newcrossfoodcoop/nxfc-mongo:latest
+  redis:
+    image: "redis:alpine"
+    
+publish:
+  docker:
+    username: bsimpson53
+    email: $$DOCKER_EMAIL
+    password: $$DOCKER_PASSWORD
+    repo: newcrossfoodcoop/nxfc_products
+    tag: latest
+    when:
+      branch: master
+      
+  docker:
+    username: bsimpson53
+    email: $$DOCKER_EMAIL
+    password: $$DOCKER_PASSWORD
+    repo: newcrossfoodcoop/nxfc_products
+    tag: $$TAG
+    when:
+      event: tag

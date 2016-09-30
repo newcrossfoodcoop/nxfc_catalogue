@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-03/schema#",
+    "type": "object",
+    "description": "Product",
+    "properties": {
+        "_id": {
+            "type": "string",
+            "example": "57c4b1ba1abb0114001963c5"
+        },
+        "__v": "number",
+        "created": "date",
+        "updated": "date",
+        "tags": "array",
+        "annotation": "string",
+        "description": "string",
+        "name": {
+            "type": "string",
+            "example": "My Product"
+        }
+    }
+}

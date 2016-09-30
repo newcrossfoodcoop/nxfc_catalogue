@@ -1,0 +1,39 @@
+version: '2'
+services:
+  mongo:
+    image: "newcrossfoodcoop/nxfc-mongo"
+    ports:
+      - "27017:27017"
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+  base:
+    build: .
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+      - service
+      - base
+    environment:
+      - MONGO_HOST=mongo
+      - REDIS_HOST=redis
+  service:
+    build:
+      context: .
+      dockerfile: service/Dockerfile
+    ports:
+      - "3004:3004"
+    depends_on:
+      - mongo
+      - redis
+      - base
+    environment:
+      - MONGO_HOST=mongo
+      - REDIS_HOST=redis
+      - DEBUG=ingester
