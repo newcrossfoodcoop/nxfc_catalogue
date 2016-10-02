@@ -9,9 +9,12 @@ build:
     image: mhart/alpine-node:4.5
     commands:
       - npm install
-      - gulp test
-      - gulp build
-      - 
+      - node_modules/.bin/gulp test
+      - node_modules/.bin/gulp build
+      - node_modules/.bin/gulp test:api &
+      - node_modules/.bin/gulp test:service &
+      - sleep 10s
+      - node_modules/.bin/abao api/raml/api.raml --server http://localhost:3001/api --hookfiles=api/raml/hooks/*.js
     
 compose:
   mongo:

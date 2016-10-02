@@ -11,7 +11,6 @@ module.exports = {
 		googleAnalyticsTrackingID: process.env.GOOGLE_ANALYTICS_TRACKING_ID || 'GOOGLE_ANALYTICS_TRACKING_ID',
 		version: pkgjson.version || 'VERSION'
 	},
-	port: process.env.PORT,
     assets: {
         actions: 'service/actions/**/*.js',
         routes: 'api/routes/**/*.js',
@@ -29,5 +28,13 @@ module.exports = {
     },
     redis: {
         host: process.env.REDIS_HOST || (process.env.REDIS_HOST_VAR ? process.env[process.env.REDIS_HOST_VAR] : 'localhost')
+    },
+    service: {
+        host: 'localhost',
+        port: 3004
+    },
+    api: {
+        host: 'localhost',
+        port: 3000
     }
 };

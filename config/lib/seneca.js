@@ -14,7 +14,11 @@ exports.initActions = function() {
 };
 
 exports.initClient = function() {
-    seneca.client({port: config.service.port, host: config.service.host, role: 'ingest'});
+    seneca.client({
+        port: config.service.port, 
+        host: config.service.host, 
+        role: 'ingest'
+    });
 };
 
 exports.initTransports = function() {
@@ -31,8 +35,6 @@ exports.initTransports = function() {
  * Initialize the Seneca application
  */
 module.exports.init = function () {
-    console.log(config.redis.host);
-
     this.initTransports();
 
     this.initActions();

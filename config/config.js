@@ -118,7 +118,7 @@ var initGlobalConfig = function() {
     var environmentConfig = require(path.join(process.cwd(), 'config/env/', process.env.NODE_ENV)) || {};
 
     // Merge config files
-    var config = _.defaultsDeep(defaultConfig, environmentConfig);
+    var config = _.defaultsDeep(environmentConfig, defaultConfig);
     
     // Groc external service configs
     validateServiceConfigs(config);

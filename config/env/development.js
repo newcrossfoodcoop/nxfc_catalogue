@@ -6,11 +6,9 @@ module.exports = {
 		title: 'NXFC Products - Development Environment'
 	},
 	service: {
-        host: 'service',
-        port: 3004
+        host: 'service'
     },
     api: {
-        host: 'api',
-        port: 3000
+        host: 'api'
     }
 };

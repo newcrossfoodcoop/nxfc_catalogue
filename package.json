@@ -32,6 +32,7 @@
     "yaml-js": "^0.1.3"
   },
   "devDependencies": {
+    "abao": "0.4.0",
     "get-gulp-args": "0.0.1",
     "gulp": "^3.9.1",
     "gulp-jshint": "^2.0.1",
