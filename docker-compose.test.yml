@@ -11,6 +11,7 @@ services:
   base:
     build: .
   api:
+    network_mode: host
     build:
       context: .
       dockerfile: api/Dockerfile
@@ -21,10 +22,11 @@ services:
       - service
       - base
     environment:
-      - MONGO_HOST=mongo
-      - REDIS_HOST=redis
+      - MONGO_HOST=localhost
+      - REDIS_HOST=localhost
     command: gulp test:api
   service:
+    network_mode: host
     build:
       context: .
       dockerfile: service/Dockerfile
@@ -35,6 +37,6 @@ services:
       - redis
       - base
     environment:
-      - MONGO_HOST=mongo
-      - REDIS_HOST=redis
+      - MONGO_HOST=localhost
+      - REDIS_HOST=localhost
     command: gulp test:service

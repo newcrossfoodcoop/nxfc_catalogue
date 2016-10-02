@@ -21,7 +21,11 @@ compose:
     image: newcrossfoodcoop/nxfc-mongo:latest
   redis:
     image: "redis:alpine"
-    
+
+notify:
+  gitter:
+    webhook: https://webhooks.gitter.im/e/$${GITTER_ID}
+
 publish:
   docker:
     username: bsimpson53
