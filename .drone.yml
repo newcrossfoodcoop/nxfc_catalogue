@@ -3,6 +3,7 @@ cache:
     - node_modules
     - .git
     - public/lib
+    - docker/image.tar
 
 build:
   main:
@@ -35,6 +36,10 @@ publish:
     tag: latest
     when:
       branch: master
+    load: docker/image.tar
+    save:
+      destination: docker/image.tar
+      tag: latest
       
   docker:
     username: bsimpson53
@@ -44,3 +49,4 @@ publish:
     tag: $$TAG
     when:
       event: tag
+    load: docker/image.tar

@@ -3,3 +3,4 @@ node_modules
 .drone.yml
 secrets.yml
 .git
+docker/*
