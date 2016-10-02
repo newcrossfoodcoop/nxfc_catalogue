@@ -8,35 +8,27 @@ services:
     image: "redis:alpine"
     ports:
       - "6379:6379"
-  base:
-    build: .
   api:
     network_mode: host
-    build:
-      context: .
-      dockerfile: api/Dockerfile
+    build: .
     ports:
       - "3001:3001"
     depends_on:
       - mongo
-      - service
-      - base
+      - worker
     environment:
       - MONGO_HOST=localhost
       - REDIS_HOST=localhost
     command: gulp test:api
-  service:
+  worker:
     network_mode: host
-    build:
-      context: .
-      dockerfile: service/Dockerfile
+    build: .
     ports:
       - "3005:3005"
     depends_on:
       - mongo
       - redis
-      - base
     environment:
       - MONGO_HOST=localhost
       - REDIS_HOST=localhost
-    command: gulp test:service
+    command: gulp test:worker

@@ -41,12 +41,12 @@ gulp.task('nodemon:api', function () {
 	});
 });
 
-gulp.task('nodemon:service', function () {
+gulp.task('nodemon:worker', function () {
 	return plugins.nodemon({
-		script: 'service.js',
+		script: 'worker.js',
 		nodeArgs: ['--debug=5859'],
 		ext: 'js',
-		watch: _.union([assets.models, assets.config, assets.actions, assets.serviceControllers])
+		watch: _.union([assets.models, assets.config, assets.actions, assets.workerControllers])
 	});
 });
 
@@ -66,12 +66,12 @@ function spawnNode(entry){
     spawn('node', nodeArgs, {stdio: 'inherit'}); 
 }
 
-gulp.task('node:service', function () { spawnNode('service.js') });
+gulp.task('node:worker', function () { spawnNode('worker.js') });
 gulp.task('node:api',     function () { spawnNode('api.js') });
 
 // JS linting task
 gulp.task('jshint', function () {
-	return gulp.src(_.union([assets.models, assets.config, assets.actions, assets.serviceControllers, assets.apiControllers]))
+	return gulp.src(_.union([assets.models, assets.config, assets.actions, assets.workerControllers, assets.apiControllers]))
 		.pipe(plugins.jshint())
 		.pipe(plugins.jshint.reporter('default'))
 		.pipe(plugins.jshint.reporter('fail'));
@@ -84,7 +84,7 @@ gulp.task('mocha', function (done) {
 	mongoose.loadModels();
 
 	// Run the tests
-	gulp.src(_.union([assets.tests.service,assets.tests.api]))
+	gulp.src(_.union([assets.tests.worker,assets.tests.api]))
 		.pipe(plugins.mocha({
 			reporter: 'spec',
 			timeout: 4000
@@ -128,15 +128,15 @@ gulp.task('default', function(done) {
 });
 
 gulp.task('default:message', function(done) {
-    console.log('\nTo run the parts:\n\tgulp api\n\tgulp service\n');
+    console.log('\nTo run the parts:\n\tgulp api\n\tgulp worker\n');
 });
 
 gulp.task('api', function(done) {
 	runSequence('env:dev', 'jshint', 'nodemon:api', done);
 });
 
-gulp.task('service', function(done) {
-	runSequence('env:dev', 'jshint', 'nodemon:service', done);
+gulp.task('worker', function(done) {
+	runSequence('env:dev', 'jshint', 'nodemon:worker', done);
 });
 
 // Run the project in production mode
@@ -144,8 +144,8 @@ gulp.task('test:api', function(done) {
 	runSequence('env:test', 'node:api', done);
 });
 
-gulp.task('test:service', function(done) {
-	runSequence('env:test', 'node:service', done);
+gulp.task('test:worker', function(done) {
+	runSequence('env:test', 'node:worker', done);
 });
 
 // Run the project in production mode
@@ -153,8 +153,8 @@ gulp.task('prod:api', function(done) {
 	runSequence('env:prod', 'node:api', done);
 });
 
-gulp.task('prod:service', function(done) {
-	runSequence('env:prod', 'node:service', done);
+gulp.task('prod:worker', function(done) {
+	runSequence('env:prod', 'node:worker', done);
 });
 
 // Run the project in stage mode
@@ -162,8 +162,8 @@ gulp.task('stage:api', function(done) {
 	runSequence('env:stage', 'node:api', done);
 });
 
-gulp.task('stage:service', function(done) {
-	runSequence('env:stage', 'node:service', done);
+gulp.task('stage:worker', function(done) {
+	runSequence('env:stage', 'node:worker', done);
 });
 
 

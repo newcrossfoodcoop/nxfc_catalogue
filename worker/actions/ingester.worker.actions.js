@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 
-var ingester = require('../controllers/ingester.service.controller');
+var ingester = require('../controllers/ingester.worker.controller');
 
 module.exports = function() {
     var seneca = this;

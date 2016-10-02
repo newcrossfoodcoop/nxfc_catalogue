@@ -8,6 +8,8 @@ var config = require('./config/config'),
 	express = require('./config/lib/express'),
 	seneca = require('./config/lib/seneca');
 
+config.app.app = 'api';
+
 // Initialize mongoose
 mongoose.connect(function (db) {
 	// Initialize express

@@ -5,7 +5,7 @@ module.exports = {
 	app: {
 		title: 'NXFC Products - Test Environment'
 	},
-	service: {
+	worker: {
         port: 3005
     },
     api: {

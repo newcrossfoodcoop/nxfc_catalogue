@@ -1,14 +1,14 @@
 [![Stories in Ready](https://badge.waffle.io/newcrossfoodcoop/nxfc.png?label=ready&title=Ready)](https://waffle.io/newcrossfoodcoop/nxfc)
-# Products Services
+# NXFC Products Services
 
 [![Join the chat at https://gitter.im/newcrossfoodcoop/nxfc](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/newcrossfoodcoop/nxfc?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [![Build Status](http://drone.newcrossfoodcoop.org.uk/api/badge/github.com/newcrossfoodcoop/nxfc_products/status.svg?branch=master)](http://drone.newcrossfoodcoop.org.uk/github.com/newcrossfoodcoop/nxfc_products)
 [![Dependency Status](https://david-dm.org/newcrossfoodcoop/nxfc_products.svg)](https://david-dm.org/newcrossfoodcoop/nxfc)
 
-This repository provides two containers that share a mongo database and 
-communicate with each other via seneca calls over a web transport and a redis
-transport.
+This repository provides a docker image that can be run seperately as a worker
+and an api sharing a mongo database and communicating with each other via
+seneca calls over a web transport and a redis transport.
 
 The purpose of these services is to:
 
@@ -42,6 +42,8 @@ To get the development setup running:
 $ docker-compose build
 $ docker-compose up
 '''
+
+There is also a test configuration that should mimic the drone configuration.
 
 ## Useful local links:
 

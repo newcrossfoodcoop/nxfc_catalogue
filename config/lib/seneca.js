@@ -15,8 +15,8 @@ exports.initActions = function() {
 
 exports.initClient = function() {
     seneca.client({
-        port: config.service.port, 
-        host: config.service.host, 
+        port: config.worker.port, 
+        host: config.worker.host, 
         role: 'ingest'
     });
 };

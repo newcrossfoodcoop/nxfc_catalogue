@@ -12,7 +12,7 @@ build:
       - node_modules/.bin/gulp test
       - node_modules/.bin/gulp build
       - node_modules/.bin/gulp test:api &
-      - node_modules/.bin/gulp test:service &
+      - node_modules/.bin/gulp test:worker &
       - sleep 10s
       - node_modules/.bin/abao api/raml/api.raml --server http://localhost:3001/api --hookfiles=api/raml/hooks/*.js
     
@@ -28,45 +28,19 @@ notify:
 
 publish:
   docker:
-    context: .
-    file: api/Dockerfile
     username: bsimpson53
     email: $$DOCKER_EMAIL
     password: $$DOCKER_PASSWORD
     repo: newcrossfoodcoop/nxfc_products
-    tag: api-latest
+    tag: latest
     when:
       branch: master
       
   docker:
-    context: .
-    file: api/Dockerfile
     username: bsimpson53
     email: $$DOCKER_EMAIL
     password: $$DOCKER_PASSWORD
     repo: newcrossfoodcoop/nxfc_products
-    tag: api-$$TAG
-    when:
-      event: tag
-      
-  docker:
-    context: .
-    dockerfile: service/Dockerfile
-    username: bsimpson53
-    email: $$DOCKER_EMAIL
-    password: $$DOCKER_PASSWORD
-    repo: newcrossfoodcoop/nxfc_products
-    tag: service-latest
-    when:
-      branch: master
-      
-  docker:
-    context: .
-    dockerfile: service/Dockerfile
-    username: bsimpson53
-    email: $$DOCKER_EMAIL
-    password: $$DOCKER_PASSWORD
-    repo: newcrossfoodcoop/nxfc_products
-    tag: service-$$TAG
+    tag: $$TAG
     when:
       event: tag

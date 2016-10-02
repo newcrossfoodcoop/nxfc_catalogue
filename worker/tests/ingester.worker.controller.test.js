@@ -3,7 +3,7 @@
 var assert = require('assert');
 var rewire = require('rewire');
 
-var ingester = rewire('../controllers/ingester.service.controller');
+var ingester = rewire('../controllers/ingester.worker.controller');
 
 /**
  * Ingester controller tests

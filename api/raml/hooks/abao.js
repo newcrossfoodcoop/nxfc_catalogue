@@ -48,9 +48,14 @@ hooks.before('POST /ingests -> 200', function (test,done) {
     if (serverUrl.port) {
         var downloadUrl = url.parse(test.request.body.downloadUrl);
         downloadUrl.port = serverUrl.port;
-        downloadUrl.hostname = serverUrl.hostname;
+        
+        // if we're in test mode change the host too
+        if (serverUrl.port === 3001) {
+            downloadUrl.hostname = serverUrl.hostname;
+        }
+        
+        // make sure format uses our new values
         downloadUrl.host = null;
-        //console.log(url.format(downloadUrl));
         test.request.body.downloadUrl = url.format(downloadUrl);
     }
     

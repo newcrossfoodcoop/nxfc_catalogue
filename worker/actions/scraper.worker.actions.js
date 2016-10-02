@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 
-var scraper = require('../controllers/scraper.service.controller');
+var scraper = require('../controllers/scraper.worker.controller');
 
 module.exports = function(options) {
     var seneca = this;

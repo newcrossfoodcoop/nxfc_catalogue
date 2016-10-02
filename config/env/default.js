@@ -5,21 +5,21 @@ var path = require('path'),
 
 module.exports = {
 	app: {
+	    app: 'unknown',
 		title: pkgjson.name,
-		description: 'Full-Stack JavaScript with MongoDB, Express, AngularJS, and Node.js',
+		description: 'NXFC Products Services',
 		keywords: 'mongodb, express, angularjs, node.js, mongoose, passport',
-		googleAnalyticsTrackingID: process.env.GOOGLE_ANALYTICS_TRACKING_ID || 'GOOGLE_ANALYTICS_TRACKING_ID',
 		version: pkgjson.version || 'VERSION'
 	},
     assets: {
-        actions: 'service/actions/**/*.js',
+        actions: 'worker/actions/**/*.js',
         routes: 'api/routes/**/*.js',
         models: 'models/**/*.js',
         config: 'config/**/*.js',
-        apiControllers: 'service/controllers/**/*.js',
-        serviceControllers: 'api/controllers/**/*.js',
+        workerControllers: 'worker/controllers/**/*.js',
+        apiControllers: 'api/controllers/**/*.js',
         tests: {
-            service: 'service/tests/**/*.js',
+            worker: 'worker/tests/**/*.js',
             api: 'api/tests/**/*.js'
         }
     },
@@ -29,7 +29,7 @@ module.exports = {
     redis: {
         host: process.env.REDIS_HOST || (process.env.REDIS_HOST_VAR ? process.env[process.env.REDIS_HOST_VAR] : 'localhost')
     },
-    service: {
+    worker: {
         host: 'localhost',
         port: 3004
     },
