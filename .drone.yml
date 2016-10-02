@@ -28,19 +28,45 @@ notify:
 
 publish:
   docker:
+    context: .
+    file: api/Dockerfile
     username: bsimpson53
     email: $$DOCKER_EMAIL
     password: $$DOCKER_PASSWORD
     repo: newcrossfoodcoop/nxfc_products
-    tag: latest
+    tag: api-latest
     when:
       branch: master
       
   docker:
+    context: .
+    file: api/Dockerfile
     username: bsimpson53
     email: $$DOCKER_EMAIL
     password: $$DOCKER_PASSWORD
     repo: newcrossfoodcoop/nxfc_products
-    tag: $$TAG
+    tag: api-$$TAG
+    when:
+      event: tag
+      
+  docker:
+    context: .
+    dockerfile: service/Dockerfile
+    username: bsimpson53
+    email: $$DOCKER_EMAIL
+    password: $$DOCKER_PASSWORD
+    repo: newcrossfoodcoop/nxfc_products
+    tag: service-latest
+    when:
+      branch: master
+      
+  docker:
+    context: .
+    dockerfile: service/Dockerfile
+    username: bsimpson53
+    email: $$DOCKER_EMAIL
+    password: $$DOCKER_PASSWORD
+    repo: newcrossfoodcoop/nxfc_products
+    tag: service-$$TAG
     when:
       event: tag

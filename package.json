@@ -1,5 +1,5 @@
 {
-  "name": "nxfc_ingest",
+  "name": "nxfc_products",
   "version": "0.0.0",
   "description": "",
   "main": "srv/start.js",
