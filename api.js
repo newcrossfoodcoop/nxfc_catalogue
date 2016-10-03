@@ -17,7 +17,7 @@ mongoose.connect(function (db) {
     app.locals.seneca = seneca.initForApi();
 
 	// Start the app by listening on <port>
-	var port = config.api.port || 3000;
+	var port = config.api.port;
 	app.listen(port);
 
 	// Logging initialization

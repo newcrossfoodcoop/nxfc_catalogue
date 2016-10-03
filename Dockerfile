@@ -17,10 +17,10 @@ ADD . /home/app
 # Run build
 RUN gulp build
 
-# 3000 3001 for api dev/test 
-# 3004 3004 for worker dev/test
+# 3010 3011 for api dev/test 
+# 3014 3014 for worker dev/test
 # 5858 for debug
-EXPOSE 3000 3001 3004 3005 5858
+EXPOSE 3010 3011 3014 3015 5858
 
 
 # CMD ["gulp","api"]

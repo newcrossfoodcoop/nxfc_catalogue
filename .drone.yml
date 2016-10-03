@@ -15,7 +15,7 @@ build:
       - node_modules/.bin/gulp test:api &
       - node_modules/.bin/gulp test:worker &
       - sleep 10s
-      - node_modules/.bin/abao api/raml/api.raml --server http://localhost:3001/api --hookfiles=api/raml/hooks/*.js
+      - node_modules/.bin/abao api/raml/api.raml --server http://localhost:3011/api --hookfiles=api/raml/hooks/*.js
     
 compose:
   mongo:

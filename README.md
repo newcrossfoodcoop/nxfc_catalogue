@@ -15,6 +15,8 @@ The purpose of these services is to:
 * manage product and supplier information.
 * ingest product data.
 
+This collection of services uses the port range 3010-3019
+
 ## Technologies
 
 * docker
@@ -49,8 +51,8 @@ There is also a test configuration that should mimic the drone configuration.
 
 The API documentation can be found by interrogating your server
 
-* API documentation: http://localhost:3000
-* RAML spec: http://localhost:3000/api.raml
+* API documentation: http://localhost:3010
+* RAML spec: http://localhost:3010/api.raml
 
 ## Running tests:
 
