@@ -31,10 +31,10 @@ module.exports = {
     },
     worker: {
         host: 'localhost',
-        port: 3004
+        port: 3014
     },
     api: {
         host: 'localhost',
-        port: 3000
+        port: 3010
     }
 };

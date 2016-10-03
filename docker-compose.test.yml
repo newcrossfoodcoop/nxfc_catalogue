@@ -12,7 +12,7 @@ services:
     network_mode: host
     build: .
     ports:
-      - "3001:3001"
+      - "3011:3011"
     depends_on:
       - mongo
       - worker
@@ -24,7 +24,7 @@ services:
     network_mode: host
     build: .
     ports:
-      - "3005:3005"
+      - "3015:3015"
     depends_on:
       - mongo
       - redis

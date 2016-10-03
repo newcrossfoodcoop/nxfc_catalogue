@@ -6,9 +6,9 @@ module.exports = {
 		title: 'NXFC Products - Test Environment'
 	},
 	worker: {
-        port: 3005
+        port: 3015
     },
     api: {
-        port: 3001
+        port: 3011
     }
 };

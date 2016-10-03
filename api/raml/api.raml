@@ -1,7 +1,7 @@
 #%RAML 0.8
 
 title: NXFC Products
-baseUri: http://localhost:3000/api
+baseUri: http://localhost:3010/api
 
 schemas:
   - Supplier: !include schema/supplier.json
@@ -189,7 +189,7 @@ resourceTypes:
             "description": "Description of My Ingest",
             "name": "My Ingest Name",
             "supplier": "57c4b1ba1abb0114001963c5",
-            "downloadUrl": "http://api:3000/api.csv",
+            "downloadUrl": "http://api:3010/api.csv",
             "fieldMap": "one: A\ntwo: B\nthree: C"
           }
   /{ingestId}:
