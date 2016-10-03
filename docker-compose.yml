@@ -8,18 +8,18 @@ services:
     image: "redis:alpine"
     ports:
       - "6379:6379"
-  api:
+  products_api:
     build: .
     ports:
       - "3010:3010"
     depends_on:
       - mongo
-      - worker
+      - products_worker
     environment:
       - MONGO_HOST=mongo
       - REDIS_HOST=redis
     command: gulp api
-  worker:
+  products_worker:
     build: .
     ports:
       - "3014:3014"

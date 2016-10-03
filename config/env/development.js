@@ -6,9 +6,9 @@ module.exports = {
 		title: 'NXFC Products - Development Environment'
 	},
 	worker: {
-        host: 'worker'
+        host: 'products_worker'
     },
     api: {
-        host: 'api'
+        host: 'products_api'
     }
 };
