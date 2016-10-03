@@ -3,7 +3,8 @@
 
 [![Join the chat at https://gitter.im/newcrossfoodcoop/nxfc](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/newcrossfoodcoop/nxfc?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-[![Build Status](http://drone.newcrossfoodcoop.org.uk/api/badge/github.com/newcrossfoodcoop/nxfc_products/status.svg?branch=master)](http://drone.newcrossfoodcoop.org.uk/github.com/newcrossfoodcoop/nxfc_products)
+[![Build Status](http://drone.newcrossfoodcoop.org.uk/api/badges/newcrossfoodcoop/nxfc_products/status.svg)](http://drone.newcrossfoodcoop.org.uk/newcrossfoodcoop/nxfc_products)
+
 [![Dependency Status](https://david-dm.org/newcrossfoodcoop/nxfc_products.svg)](https://david-dm.org/newcrossfoodcoop/nxfc)
 
 This repository provides a docker image that can be run seperately as a worker
