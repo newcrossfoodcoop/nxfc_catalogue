@@ -3,6 +3,7 @@ var hooks = require('hooks'),
 
 var request = require('request');
 var url = require('url');
+var debug = require('debug')('hooks');
 
 var store = {};
 
@@ -48,9 +49,11 @@ hooks.before('POST /ingests -> 200', function (test,done) {
     if (serverUrl.port) {
         var downloadUrl = url.parse(test.request.body.downloadUrl);
         downloadUrl.port = serverUrl.port;
+        debug('setting downloadUrl port to: ' + serverUrl.port);
         
         // if we're in test mode change the host too
-        if (serverUrl.port === 3001) {
+        if (serverUrl.port === "3011") {
+            debug('setting downloadUrl host to: ' + serverUrl.hostname);
             downloadUrl.hostname = serverUrl.hostname;
         }
         
