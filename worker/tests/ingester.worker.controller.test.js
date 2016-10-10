@@ -27,14 +27,11 @@ describe('Ingester Controller Tests:', function() {
         done();
     });
 
-	it('test', function(done){
+	it('stubbed ingest', function(done){
 	    ingester.ingest({ 
 	        log: function() {},
 	        finish: function() {}
-	    },function() {
-	        console.log(arguments);
-	        done();
-	    });
+	    },done);
 	});
 	
 	after(function(done) {
