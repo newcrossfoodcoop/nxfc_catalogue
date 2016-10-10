@@ -26,7 +26,8 @@ exports.initTransports = function() {
         .use('redis-queue-transport', {
             'redis-queue': {
                 host: config.redis.host,
-                port: 6379
+                port: 6379,
+                topic: 'seneca_' + process.env.NODE_ENV
             }
         });
 };
