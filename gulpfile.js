@@ -84,18 +84,18 @@ gulp.task('mocha', function (done) {
 	mongoose.loadModels();
 
 	// Run the tests
-	gulp.src(_.union([assets.tests.worker,assets.tests.api]))
+	gulp.src(_.union([
+	    assets.tests.worker,assets.tests.api,assets.tests.model
+	]))
 		.pipe(plugins.mocha({
 			reporter: 'spec',
 			timeout: 4000
 		}))
 		.on('error', function (err) {
-			// If an error occurs, save it
-			console.log(err);
-			error = err;
+			done(err);
 		})
-		.on('end', function() {
-			done(error);
+		.on('end', function(err) {
+			done(err);
 		});
 
 });

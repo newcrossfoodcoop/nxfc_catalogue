@@ -43,6 +43,7 @@
     "gulp-run": "^1.7.1",
     "jshint": "^2.9.3",
     "rewire": "^2.5.2",
-    "run-sequence": "^1.2.2"
+    "run-sequence": "^1.2.2",
+    "should": "11.1.0"
   }
 }

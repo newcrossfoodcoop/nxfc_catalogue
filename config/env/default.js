@@ -14,13 +14,14 @@ module.exports = {
     assets: {
         actions: 'worker/actions/**/*.js',
         routes: 'api/routes/**/*.js',
-        models: 'models/**/*.js',
+        models: 'models/*.js',
         config: 'config/**/*.js',
         workerControllers: 'worker/controllers/**/*.js',
         apiControllers: 'api/controllers/**/*.js',
         tests: {
             worker: 'worker/tests/**/*.js',
-            api: 'api/tests/**/*.js'
+            api: 'api/tests/**/*.js',
+            model: 'models/tests/**/*.js'
         }
     },
     mongo: {
