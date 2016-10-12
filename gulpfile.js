@@ -79,7 +79,7 @@ gulp.task('jshint', function () {
 
 // Mocha tests task
 gulp.task('mocha', function (done) {
-	var error;
+	var already;
 	var mongoose = require('./config/lib/mongoose');
 	mongoose.loadModels();
 
@@ -91,11 +91,14 @@ gulp.task('mocha', function (done) {
 			reporter: 'spec',
 			timeout: 4000
 		}))
-		.on('error', function (err) {
+		.on('error', function(err) {
+		    already = true;
 			done(err);
 		})
 		.on('end', function(err) {
-			done(err);
+		    if (!already) {
+			    done(err);
+			}
 		});
 
 });
