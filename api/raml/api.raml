@@ -120,6 +120,23 @@ resourceTypes:
             "brand" : "My Brand",
             "tag" : "My Tag"
           }
+  get:
+    queryParameters:
+      itemsperpage:
+        type: "integer"
+        default: 20
+      pagenumber:
+        type: "integer"
+        default: 1
+      textsearch:
+        type: "string"
+      tags:
+        type: "string"
+      id:
+        type: "string"
+      sort:
+        type: "string"
+        default: "name"
   /count:
     get:
       description: count of matching products

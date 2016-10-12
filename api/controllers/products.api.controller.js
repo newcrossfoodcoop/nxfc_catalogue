@@ -98,24 +98,43 @@ exports.delete = function(req, res) {
 exports.list = function(req, res) {
     var itemsPerPage = req.query.itemsperpage || 20;
     var pageNumber = req.query.pagenumber || 1;
+    var sortParam = req.query.sort || 'name';
     
     var query;
+    var qp1 = {};
+    var qp2;
     
     if (req.query.textsearch) {
-        query = Product.find(
-            { $text : { $search : req.query.textsearch } }, 
-            { score : { $meta: 'textScore' } }
-        )
-        .sort({ score : { $meta : 'textScore' } });
+        qp1.$test.$search = req.query.textsearch;
+        qp2 = { score : { $meta: 'textScore' } };
+        sortParam = { score : { $meta : 'textScore' } };
+//        query = Product.find(
+//            { $text : { $search : req.query.textsearch } }, 
+//            { score : { $meta: 'textScore' } }
+//        )
+//        .sort({ score : { $meta : 'textScore' } });
     } else if (req.query.tags) {
-        query = Product.find(
-            { $in: req.query.tags }
-        ).sort('name');
+        qp1.tags = { $in: req.query.tags };
+//        query = Product.find({
+//            tags: { $in: req.query.tags }
+//        }).sort('name');
+    } else if (req.query.ids) {
+        qp1._id = { $in: req.query.ids };
+//        query = Product.find({
+//            _id: { $in: req.query.ids }
+//        });
+//    } else {
+//        query = Product.find().sort('name');
+    }
+
+    if (qp2) {
+        query = Product.find(qp1,qp2);
     } else {
-        query = Product.find().sort('name');
+        query = Product.find(qp1);
     }
     
     query
+        .sort(sortParam)
         //.populate('user', 'displayName')
         .populate('supplier', 'name')
         .skip(itemsPerPage * (pageNumber - 1))
