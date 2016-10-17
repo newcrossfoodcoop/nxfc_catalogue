@@ -3,14 +3,7 @@
     "type": "object",
     "description": "Supplier",
     "properties": {
-        "_id": {
-            "type": "string",
-            "example": "57c4b1ba1abb0114001963c5"
-        },
-        "__v": "number",
-        "created": "date",
-        "updated": "date",
-        "description": "string",
+        "description": { "type": "string" },
         "name": {
             "type": "string",
             "example": "My Supplier"

@@ -3,16 +3,9 @@
     "type": "object",
     "description": "Product",
     "properties": {
-        "_id": {
-            "type": "string",
-            "example": "57c4b1ba1abb0114001963c5"
-        },
-        "__v": "number",
-        "created": "date",
-        "updated": "date",
-        "tags": "array",
-        "annotation": "string",
-        "description": "string",
+        "tags": { "type": "array" },
+        "annotation": { "type": "string" },
+        "description": { "type": "string" },
         "name": {
             "type": "string",
             "example": "My Product"

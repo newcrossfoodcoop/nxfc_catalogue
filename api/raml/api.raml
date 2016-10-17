@@ -1,6 +1,6 @@
 #%RAML 0.8
 
-title: NXFC Products
+title: NXFC Catalogue
 baseUri: http://localhost:3010/api
 
 schemas:
@@ -215,6 +215,10 @@ resourceTypes:
     /start-run:
       get:
         description: Kick off a run of this ingest
+        queryParameters:
+          limit:
+            description: Limit the number of items to process in the run
+            type: integer
         responses:
           200:
             body:

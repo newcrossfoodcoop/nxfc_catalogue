@@ -3,13 +3,6 @@
     "type": "object",
     "description": "Ingest Log",
     "properties": {
-        "_id": {
-            "type": "string",
-            "example": "57c4b1ba1abb0114001963c5"
-        },
-        "__v": "number",
-        "created": "date",
-        "updated": "date",
         "ingest": {
 		    "type": "string",
 		    "required": true
