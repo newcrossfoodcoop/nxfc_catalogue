@@ -89,21 +89,37 @@ function extendProduct(product, fieldMap, record) {
     return product;
 }
 
-function getProductAndExtend(args,record, callback) {
+function getProductAndExtend(context,record, callback) {
+    var supplierCode = record[context.fieldMap.supplierCode];
+
     Product.findOne(
-        {supplierCode: args.supplierCode, supplier: args.supplierId}, 
+        {supplierCode: supplierCode, supplier: context.supplierId}, 
         function(err, product) {
             if (err) { return callback(err); }
+            if (!product) { console.log('Product not found: ' + supplierCode + ' - ' + context.supplierId); }
             
-            product = extendProduct(product, args.fieldMap, record);
+            product = extendProduct(product, context.fieldMap, record);
             
             if (! product.supplier) {
-                product.supplier = args.supplierId;
+                product.supplier = context.supplierId;
             }
     
             product.save(function(_err) {
                 if (_err) { return callback(_err); }
-                args.seneca.act({role: 'products', cmd: 'scrape', record: record});
+                // start scrape off
+                context.seneca.act({
+                    role: 'products', 
+                    cmd: 'scrape',
+                    timeout: 2 * 60 * 60 * 1000,
+                    args: { 
+                        supplierId: context.supplierId,
+                        supplierCode: supplierCode,
+                        searchSelectors: context.searchSelectors,
+                        productSelectors: context.productSelectors,
+                        searchUrlTemplate: context.ingest.searchUrlTemplate
+                    },
+                    'fatal$': false
+                });
                 return callback();
             });
         }
@@ -119,17 +135,19 @@ function csvParser(context, callback) {
         return callback(null, context); 
     }
     
-    context.log('configuring csv parser');
+    context.log('configuring csv parser, limit:' + context.limit);
     
-    var parser = csv.parse({delimiter: ',', trim: true, columns: true, relax: true});
+    var parser = csv.parse({delimiter: ',', trim: true, columns: true, relax: true, relax_column_count: true});
                 
     parser.on('readable', function(){
         var record;
         
         async.whilst(
             function(n) {
-                if (context.limit && (context.limit > context.count)) {
-                    return true; 
+                if (context.limit && (context.limit < context.parsed)) {
+                    context.log('Limit reached: %s', context.parsed);
+                    parser.end();
+                    return false; 
                 }
                 record = parser.read();
                 if (record) { return true; }
@@ -137,6 +155,7 @@ function csvParser(context, callback) {
             },
             function(cb) {
                 debug('to extend', record);
+                context.parsed++;
                 getProductAndExtend(context,record,function(err) {
                     if (err) {
                         context.log('Product error: %s', err);
@@ -152,6 +171,7 @@ function csvParser(context, callback) {
     parser.on('error', function(_err){
         // record ingest status
         context.log('csv parser error: %s', _err);
+        context.finish(_err);
     });
     
     parser.on('finish', function(){
@@ -232,10 +252,12 @@ function makeContext(args,callback) {
                 fieldMap: fieldMap,
                 searchSelectors: searchSelectors,
                 productSelectors: productSelectors,
+                supplierId: ingest.supplier,
                 limit: args.limit,
                 count: 0,
                 totalitems: 0,
-                processed: 0
+                processed: 0,
+                parsed: 0
             };
 	        
 	        startLog(context,callback);
@@ -255,7 +277,9 @@ exports.ingest = function(args,done) {
             csvParser,
             streamAndParse
         ], function (err) {
-            context.finish(err);
+            if (err) {
+                context.finish(err);
+            }
         });
         
         // Accept the request, while the ingest carries on in the background

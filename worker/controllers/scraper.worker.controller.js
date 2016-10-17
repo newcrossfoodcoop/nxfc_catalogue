@@ -2,7 +2,7 @@
 
 var async = require('async'),
     jsdom = require('jsdom'),
-    jquery = require('jquery'),
+//    jquery = require('jquery'),
     swig = require('swig'),
     request = require('request'),
     _ = require('lodash');
@@ -12,27 +12,32 @@ var mongoose = require('mongoose'),
 	
 var debug = require('debug')('scraper');
 
-function _runSelectors(product, selectors, html) {
+function _runSelectors(product, selectors, html, callback) {
 
 	// This is the only place we use the modules and they don't release memory
 	// http://stackoverflow.com/questions/13893163/jsdom-and-node-js-leaking-memory
 	// This is essentially a worker function so we don't care about speed really
-    var jd = jsdom.jsdom();
-    var $ = jquery(jd.parentWindow);
-    
-    _(selectors)
-        .keys()
-        .forEach(function(k) {
-            if (k.match(/imageurl$/i)) {
-                product[k] = $(html).find(selectors[k]).attr('src');
-            } else if (k.match(/url$/i)) {
-                product[k] = $(html).find(selectors[k]).attr('href');
-            } else {
-                product[k] = $(html).find(selectors[k]).html();
-            }
-            //console.log('%s = "%s"',k,product[k]);
-        });
-    jd.parentWindow.close();
+    jsdom.env({
+        html: html,
+        done: function(err,window) {
+            var $ = require('jquery')(window);
+            
+            _(selectors)
+                .keys()
+                .forEach(function(k) {
+                    if (k.match(/imageurl$/i)) {
+                        product[k] = $(html).find(selectors[k]).attr('src');
+                    } else if (k.match(/url$/i)) {
+                        product[k] = $(html).find(selectors[k]).attr('href');
+                    } else {
+                        product[k] = $(html).find(selectors[k]).html();
+                    }
+                    console.log('%s = "%s"',k,product[k]);
+                });
+                
+            callback();
+        }
+    });
 }
 
 function searchAndScrapeExternal(args, callback) {
@@ -53,8 +58,9 @@ function searchAndScrapeExternal(args, callback) {
                 swig.render(args.searchUrlTemplate, swigOpts),
                 function(err,res,body) {
                     if (err) { return _callback(err); }
-                    _runSelectors(product, args.searchSelectors, body);
-                    _callback(null, product.externalUrl);
+                    _runSelectors(product, args.searchSelectors, body, function() {
+                        _callback(null, product.externalUrl);
+                    });
                 }
             );
         },
@@ -64,8 +70,7 @@ function searchAndScrapeExternal(args, callback) {
                 link, 
                 function(err,res,body) {
                     if (err) { return _callback(err); }
-                    _runSelectors(product, args.productSelectors, body);
-                    _callback();  
+                    _runSelectors(product, args.productSelectors, body, _callback);
                 }
             );
         }
@@ -84,14 +89,26 @@ function searchAndScrapeExternal(args, callback) {
  * productSelectors
  */
 
-exports.scrape = function(args, done) {
+exports.scrape = function(_args, _done) {
     debug('hello');
-    done(null, {foo: 'bar'});
+    
+    var args = _args.args;
+    var done = function(err) {
+        if (err) {
+            console.error(err);
+        }
+        _done();
+    };
+    
+    console.log(args);
+    
+    //done(null, {foo: 'bar'});
 
     Product.findOne(
-        {supplierCode: args.record[args.supplierCode]}, 
+        {supplierCode: args.supplierCode, supplier: args.supplierId}, 
         function(err, product) {
             if (err) { return done(err); }
+            if (!product) { return done('Product not found: ' + args.supplierCode); }
             
             //console.log('product retrieved:', product._id);
             

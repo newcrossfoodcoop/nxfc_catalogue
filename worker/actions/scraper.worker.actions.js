@@ -10,8 +10,7 @@ module.exports = function(options) {
     var seneca = this;
     
     seneca
-        .add({role: 'products', cmd: 'scrape'}, scraper.scrape)
-        .client({type: 'redis-queue', pin: {role: 'products', cmd: 'scrape'}})
-        .listen({type: 'redis-queue', pin: {role: 'products', cmd: 'scrape'}});
+        .add({role: 'scraper', cmd: 'scrape'}, scraper.scrape)
+        .listen({type: 'redis-queue', pin: {role: 'scraper', cmd: 'scrape'}});
     
 };

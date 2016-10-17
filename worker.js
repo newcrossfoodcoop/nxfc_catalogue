@@ -14,10 +14,4 @@ mongoose.connect(function (db) {
 	// Initialize seneca
 	var app = seneca.init(db);
 
-	// Start the app by listening on <port>
-	var port = config.worker.port;
-	app.listen(port);
-
-	// Logging initialization
-	console.log('Started on port ' + port);
 });
