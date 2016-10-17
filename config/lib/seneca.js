@@ -5,24 +5,10 @@
  */
 var config = require('../config'),
     path = require('path'),
-    seneca = require('seneca')();
+    seneca = require('seneca');
 
-exports.initActions = function() {
-	config.files.actions.forEach(function (actionPath) {
-		seneca.use(path.resolve(actionPath));
-	});
-};
-
-exports.initClient = function() {
-    seneca.client({
-        port: config.worker.port, 
-        host: config.worker.host, 
-        role: 'ingest'
-    });
-};
-
-exports.initTransports = function() {
-    seneca
+exports.initTransports = function(_seneca) {
+    return _seneca
         .use('redis-queue-transport', {
             'redis-queue': {
                 host: config.redis.host,
@@ -36,15 +22,18 @@ exports.initTransports = function() {
  * Initialize the Seneca application
  */
 module.exports.init = function () {
-    this.initTransports();
+    // Creates a new seneca instance for each action group
+	config.files.actions.forEach(function (actionPath) {
+	    exports.initTransports(seneca())
+		    .use(path.resolve(actionPath));
+	});
 
-    this.initActions();
-    
-    return seneca;
 };
 
 module.exports.initForApi = function () {
-    this.initClient();
-    
-    return seneca;
+    return seneca().client({
+        port: config.worker.port, 
+        host: config.worker.host, 
+        role: 'ingester'
+    });
 };

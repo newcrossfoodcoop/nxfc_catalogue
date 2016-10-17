@@ -77,6 +77,14 @@ gulp.task('jshint', function () {
 		.pipe(plugins.jshint.reporter('fail'));
 });
 
+// RAML linting task
+gulp.task('ramllint', function() {
+  gulp.src(assets.raml)
+    .pipe(plugins.raml())
+    .pipe(plugins.raml.reporter('default'))
+    .pipe(plugins.raml.reporter('fail'));
+});
+
 // Mocha tests task
 gulp.task('mocha', function (done) {
 	var already;
@@ -120,14 +128,19 @@ gulp.task('build', function(done) {
 	runSequence('build:docs', done);
 });
 
+// Build documentation
+gulp.task('lint', function(done) {
+	runSequence('jshint', 'ramllint', done);
+});
+
 // Run the project tests
 gulp.task('test', function(done) {
-	runSequence('env:test', 'jshint', 'mocha', done);
+	runSequence('env:test', 'lint', 'mocha', done);
 });
 
 // Run the project in development mode
 gulp.task('default', function(done) {
-	runSequence('env:dev', 'jshint', 'default:message', done);
+	runSequence('env:dev', 'lint', 'default:message', done);
 });
 
 gulp.task('default:message', function(done) {
@@ -135,11 +148,11 @@ gulp.task('default:message', function(done) {
 });
 
 gulp.task('api', function(done) {
-	runSequence('env:dev', 'jshint', 'nodemon:api', done);
+	runSequence('env:dev', 'lint', 'nodemon:api', done);
 });
 
 gulp.task('worker', function(done) {
-	runSequence('env:dev', 'jshint', 'nodemon:worker', done);
+	runSequence('env:dev', 'lint', 'nodemon:worker', done);
 });
 
 // Run the project in production mode

@@ -31,7 +31,7 @@ publish:
     username: bsimpson53
     email: $$DOCKER_EMAIL
     password: $$DOCKER_PASSWORD
-    repo: newcrossfoodcoop/nxfc_products
+    repo: newcrossfoodcoop/nxfc_catalogue
     tag: latest
     when:
       branch: master
@@ -44,7 +44,7 @@ publish:
     username: bsimpson53
     email: $$DOCKER_EMAIL
     password: $$DOCKER_PASSWORD
-    repo: newcrossfoodcoop/nxfc_products
+    repo: newcrossfoodcoop/nxfc_catalogue
     tag: $$TAG
     when:
       event: tag

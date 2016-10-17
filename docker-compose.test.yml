@@ -8,19 +8,19 @@ services:
     image: "redis:alpine"
     ports:
       - "6379:6379"
-  products_api:
+  catalogue_api:
     network_mode: host
     build: .
     ports:
       - "3011:3011"
     depends_on:
       - mongo
-      - products_worker
+      - catalogue_worker
     environment:
       - MONGO_HOST=localhost
       - REDIS_HOST=localhost
     command: gulp test:api
-  products_worker:
+  catalogue_worker:
     network_mode: host
     build: .
     ports:

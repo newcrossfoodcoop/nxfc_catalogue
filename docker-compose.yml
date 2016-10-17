@@ -8,19 +8,23 @@ services:
     image: "redis:alpine"
     ports:
       - "6379:6379"
-  products_api:
+  catalogue_api:
     build: .
+    volumes:
+      - "./api:/home/app/api"
     ports:
       - "3010:3010"
     depends_on:
       - mongo
-      - products_worker
+      - catalogue_worker
     environment:
       - MONGO_HOST=mongo
       - REDIS_HOST=redis
     command: gulp api
-  products_worker:
+  catalogue_worker:
     build: .
+    volumes:
+      - "./worker:/home/app/worker" 
     ports:
       - "3014:3014"
     depends_on:
@@ -29,5 +33,5 @@ services:
     environment:
       - MONGO_HOST=mongo
       - REDIS_HOST=redis
-      - DEBUG=ingester
+      - DEBUG=ingester,scraper
     command: gulp worker
