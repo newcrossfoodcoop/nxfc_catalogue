@@ -1,9 +1,9 @@
 'use strict';
 
 module.exports = {
-	mongo: { db: 'nxfc-products-test' },
+	mongo: { db: 'nxfc-catalogue-test' },
 	app: {
-		title: 'NXFC Products - Test Environment'
+		title: 'NXFC Catalogue - Test Environment'
 	},
 	worker: {
         port: 3015

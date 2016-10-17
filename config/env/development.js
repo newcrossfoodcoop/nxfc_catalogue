@@ -1,14 +1,14 @@
 'use strict';
 
 module.exports = {
-	mongo: { db: 'nxfc-products-dev' },
+	mongo: { db: 'nxfc-catalogue-dev' },
 	app: {
-		title: 'NXFC Products - Development Environment'
+		title: 'NXFC Catalogue - Development Environment'
 	},
 	worker: {
-        host: 'products_worker'
+        host: 'catalogue_worker'
     },
     api: {
-        host: 'products_api'
+        host: 'catalogue_api'
     }
 };

@@ -7,8 +7,8 @@ module.exports = {
 	app: {
 	    app: 'unknown',
 		title: pkgjson.name,
-		description: 'NXFC Products Services',
-		keywords: 'mongodb, express, angularjs, node.js, mongoose, passport',
+		description: 'NXFC Catalogue Services',
+		keywords: 'mongodb, express, node.js, mongoose, seneca',
 		version: pkgjson.version || 'VERSION'
 	},
     assets: {
@@ -18,6 +18,7 @@ module.exports = {
         config: 'config/**/*.js',
         workerControllers: 'worker/controllers/**/*.js',
         apiControllers: 'api/controllers/**/*.js',
+        raml: 'api/raml/*.raml',
         tests: {
             worker: 'worker/tests/**/*.js',
             api: 'api/tests/**/*.js',

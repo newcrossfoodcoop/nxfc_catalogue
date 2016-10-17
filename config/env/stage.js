@@ -1,8 +1,8 @@
 'use strict';
 
 module.exports = {
-	mongo: { db: 'nxfc-products-stage' },
+	mongo: { db: 'nxfc-catalogue-stage' },
 	app: {
-		title: 'NXFC Products - Stage Environment'
+		title: 'NXFC Catalogue - Stage Environment'
 	}
 };
