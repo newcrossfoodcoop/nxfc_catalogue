@@ -36,7 +36,6 @@ var getErrorMessage = function(err) {
  */
 exports.create = function(req, res) {
 	var product = new Product(req.body);
-	//product.user = req.user;
 
 	product.save(function(err) {
 		if (err) {
@@ -105,26 +104,16 @@ exports.list = function(req, res) {
     var qp2;
     
     if (req.query.textsearch) {
-        qp1.$test.$search = req.query.textsearch;
+        qp1.$text = { $search: req.query.textsearch };
         qp2 = { score : { $meta: 'textScore' } };
         sortParam = { score : { $meta : 'textScore' } };
-//        query = Product.find(
-//            { $text : { $search : req.query.textsearch } }, 
-//            { score : { $meta: 'textScore' } }
-//        )
-//        .sort({ score : { $meta : 'textScore' } });
     } else if (req.query.tags) {
         qp1.tags = { $in: req.query.tags };
-//        query = Product.find({
-//            tags: { $in: req.query.tags }
-//        }).sort('name');
     } else if (req.query.ids) {
-        qp1._id = { $in: req.query.ids };
-//        query = Product.find({
-//            _id: { $in: req.query.ids }
-//        });
-//    } else {
-//        query = Product.find().sort('name');
+        var ids = _.map(req.query.ids, function (id) {
+            return mongoose.Types.ObjectId(id);
+        });
+        qp1._id = { $in: ids };
     }
 
     if (qp2) {
@@ -135,7 +124,6 @@ exports.list = function(req, res) {
     
     query
         .sort(sortParam)
-        //.populate('user', 'displayName')
         .populate('supplier', 'name')
         .skip(itemsPerPage * (pageNumber - 1))
         .limit(itemsPerPage)
@@ -219,7 +207,6 @@ exports.supplierCodes = function(req, res) {
  */
 exports.productByID = function(req, res, next, id) { 
     Product.findById(id)
-        //.populate('user', 'displayName')
         .populate('supplier', 'name')
         .exec(function(err, product) {
 		    if (err) return next(err);

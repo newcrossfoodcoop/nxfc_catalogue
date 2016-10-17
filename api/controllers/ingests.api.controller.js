@@ -128,7 +128,7 @@ exports.ingestByID = function(req, res, next, id) {
 exports.run = function(req, res, next) {
     var seneca = req.app.locals.seneca;
     seneca.act({
-        role: 'ingest', 
+        role: 'ingester', 
         cmd: 'run', 
         ingestId: req.ingest._id, 
         limit: req.query.limit
