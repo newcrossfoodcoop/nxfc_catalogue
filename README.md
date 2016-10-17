@@ -1,11 +1,11 @@
 [![Stories in Ready](https://badge.waffle.io/newcrossfoodcoop/nxfc.png?label=ready&title=Ready)](https://waffle.io/newcrossfoodcoop/nxfc)
-# NXFC Products Services
+# NXFC Catalogue
 
 [![Join the chat at https://gitter.im/newcrossfoodcoop/nxfc](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/newcrossfoodcoop/nxfc?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-[![Build Status](http://drone.newcrossfoodcoop.org.uk/api/badges/newcrossfoodcoop/nxfc_products/status.svg)](http://drone.newcrossfoodcoop.org.uk/newcrossfoodcoop/nxfc_products)
+[![Build Status](http://drone.newcrossfoodcoop.org.uk/api/badges/newcrossfoodcoop/nxfc_catalogue/status.svg)](http://drone.newcrossfoodcoop.org.uk/newcrossfoodcoop/nxfc_catalogue)
 
-[![Dependency Status](https://david-dm.org/newcrossfoodcoop/nxfc_products.svg)](https://david-dm.org/newcrossfoodcoop/nxfc_products)
+[![Dependency Status](https://david-dm.org/newcrossfoodcoop/nxfc_catalogue.svg)](https://david-dm.org/newcrossfoodcoop/nxfc_catalogue)
 
 This repository provides a docker image that can be run seperately as a worker
 and an api sharing a mongo database and communicating with each other via
