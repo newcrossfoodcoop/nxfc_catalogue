@@ -110,7 +110,8 @@ exports.list = function(req, res) {
     } else if (req.query.tags) {
         qp1.tags = { $in: req.query.tags };
     } else if (req.query.ids) {
-        var ids = _.map(req.query.ids, function (id) {
+        var _ids = typeof(req.query.ids) === 'Array' ? req.query.ids : [req.query.ids];
+        var ids = _.map(_ids, function (id) {
             return mongoose.Types.ObjectId(id);
         });
         qp1._id = { $in: ids };
