@@ -6,6 +6,10 @@
   "scripts": {
     "test": "drone exec"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/newcrossfoodcoop/nxfc_catalogue.git"
+  },
   "author": "bsimpson53",
   "license": "MIT",
   "dependencies": {
