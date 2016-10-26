@@ -6,7 +6,7 @@ cache:
     - docker/image.tar
 
 build:
-  image: newcrossfoodcoop/nxfc_base:4.5.2
+  image: newcrossfoodcoop/nxfc_base:v4.5.2
   commands:
     - npm install
     - node_modules/.bin/gulp test
