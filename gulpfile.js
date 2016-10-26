@@ -31,11 +31,23 @@ gulp.task('env:stage', function () {
 	process.env.NODE_ENV = 'stage';
 });
 
+function pickArgs (names,defaults) {
+    return _(args)
+        .keys()
+        .intersection(names)
+        .map(function(k){
+            if (typeof(args[k]) !== 'boolean') { return '--' + k + '=' + args[k]; }
+            if (_.has(defaults,k)) { return '--' + k + '=' + defaults[k]; }
+            return '--' + k
+        })
+        .valueOf()
+}
+
 // Nodemon task
 gulp.task('nodemon:api', function () {
 	return plugins.nodemon({
 		script: 'api.js',
-		nodeArgs: ['--debug'],
+		nodeArgs: pickArgs(['debug']),
 		ext: 'js',
 		watch: _.union([assets.models, assets.config, assets.routes, assets.apiControllers])
 	});
@@ -44,7 +56,7 @@ gulp.task('nodemon:api', function () {
 gulp.task('nodemon:worker', function () {
 	return plugins.nodemon({
 		script: 'worker.js',
-		nodeArgs: ['--debug=5859'],
+		nodeArgs: pickArgs(['debug'],{debug:5859}),
 		ext: 'js',
 		watch: _.union([assets.models, assets.config, assets.actions, assets.workerControllers])
 	});
