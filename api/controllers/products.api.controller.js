@@ -7,6 +7,8 @@ var mongoose = require('mongoose'),
 	Product = mongoose.model('Product'),
 	_ = require('lodash');
 
+var assert = require('assert');
+
 /**
  * Get the error message from error object
  */
@@ -110,7 +112,7 @@ exports.list = function(req, res) {
     } else if (req.query.tags) {
         qp1.tags = { $in: req.query.tags };
     } else if (req.query.ids) {
-        var _ids = typeof(req.query.ids) === 'Array' ? req.query.ids : [req.query.ids];
+        var _ids = _.isArray(req.query.ids) ? req.query.ids : [req.query.ids];
         var ids = _.map(_ids, function (id) {
             return mongoose.Types.ObjectId(id);
         });
@@ -131,6 +133,28 @@ exports.list = function(req, res) {
         .exec(function(err, products) {
 		    if (err) {
 			    return res.send(400, {
+				    message: getErrorMessage(err)
+			    });
+		    } else {
+			    res.jsonp(products);
+		    }
+	    });
+};
+
+exports.listByIds = function(req, res) {
+    assert(_.isArray(req.body));
+    assert(req.body.length <= 100);
+    
+    var ids = _.map(req.body, function (id) {
+        return mongoose.Types.ObjectId(id);
+    });
+    
+    Product.find({_id: {$in: ids}})
+        .populate('supplier', 'name')
+        .limit(100)
+        .exec(function(err, products) {
+		    if (err) {
+			    return res.status(400).send({
 				    message: getErrorMessage(err)
 			    });
 		    } else {

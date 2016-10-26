@@ -7,6 +7,7 @@ module.exports = function(app) {
 	// Products Routes
 	app.route('/api/products')
 	    .get(products.list)
+	    .put(products.listByIds)
 		.post(products.create);
 
     app.route('/api/products/count')

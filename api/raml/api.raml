@@ -2,6 +2,7 @@
 
 title: NXFC Catalogue
 baseUri: http://localhost:3010/api
+version: 0.1.0
 
 schemas:
   - Supplier: !include schema/supplier.json
@@ -120,6 +121,29 @@ resourceTypes:
             "brand" : "My Brand",
             "tag" : "My Tag"
           }
+  put:
+    description: "Search for products by ID"
+    body:
+      application/json:
+        schema: |
+          {
+            "$schema": "http://json-schema.org/draft-03/schema#",
+            "type": "array",
+            "properties": "string"
+          }
+        example: |
+          [ "57c4b1ba1abb0114001963c5", "57c4b1bc1abb0119001963e9" ]
+    responses:
+      200:
+        body:
+          application/json:
+            schema: |
+              {
+                "$schema": "http://json-schema.org/draft-03/schema#", 
+                "type": "array", 
+                "properties": { "$ref": "Product" } 
+              }
+            example: "[]"
   get:
     queryParameters:
       itemsperpage:
