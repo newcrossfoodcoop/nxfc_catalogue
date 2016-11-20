@@ -47,7 +47,8 @@ var ProductSchema = new Schema({
 	},
 	supplier: {
 	    type: Schema.ObjectId,
-	    ref: 'Supplier'
+	    ref: 'Supplier',
+	    required: true
 	},
 	brand: String,
 	caseRRP: Number,

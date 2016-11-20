@@ -129,7 +129,7 @@ resourceTypes:
           {
             "$schema": "http://json-schema.org/draft-03/schema#",
             "type": "array",
-            "properties": "string"
+            "items": { "type": "string" }
           }
         example: |
           [ "57c4b1ba1abb0114001963c5", "57c4b1bc1abb0119001963e9" ]
@@ -141,7 +141,7 @@ resourceTypes:
               {
                 "$schema": "http://json-schema.org/draft-03/schema#", 
                 "type": "array", 
-                "properties": { "$ref": "Product" } 
+                "items": { "$ref": "Product" } 
               }
             example: "[]"
   get:
