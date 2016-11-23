@@ -32,7 +32,7 @@ module.exports = {
         host: process.env.REDIS_HOST || (process.env.REDIS_HOST_VAR ? process.env[process.env.REDIS_HOST_VAR] : 'localhost')
     },
     worker: {
-        host: 'localhost',
+        host: process.env.WORKER_HOST || (process.env.WORKER_HOST_VAR ? process.env[process.env.WORKER_HOST_VAR] : 'localhost'),
         port: 3014
     },
     api: {
