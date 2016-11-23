@@ -108,7 +108,7 @@ function getProductAndExtend(context,record, callback) {
                 if (_err) { return callback(_err); }
                 // start scrape off
                 context.seneca.act({
-                    role: 'products', 
+                    role: 'scraper', 
                     cmd: 'scrape',
                     timeout: 2 * 60 * 60 * 1000,
                     args: { 
