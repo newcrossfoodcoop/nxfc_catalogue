@@ -23,6 +23,7 @@ var getErrorMessage = function(err) {
 				break;
 			default:
 				message = 'Something went wrong';
+				console.error(err);
 		}
 	} else {
 		for (var errName in err.errors) {
