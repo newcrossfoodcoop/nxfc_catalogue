@@ -30,6 +30,7 @@ describe('Product Model Unit Tests:', function() {
 //		user.save(function() { 
 			product = new Product({
 				name: 'Product Name',
+				supplier: '1234567890abcdef123456a0'
 //				user: user
 			});
 

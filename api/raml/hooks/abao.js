@@ -31,6 +31,11 @@ hooks.before('GET /products/{productId} -> 200', function (test, done) {
     done();
 });
 
+hooks.before('POST /products -> 200', function (test, done) {
+    test.request.body.supplier = store.supplier2._id;
+    done();
+});
+
 hooks.after('POST /products -> 200', function (test, done) {
     store.product = test.response.body;
     done();

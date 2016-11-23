@@ -41,7 +41,7 @@ exports.create = function(req, res) {
 
 	product.save(function(err) {
 		if (err) {
-			return res.send(400, {
+			return res.status(400).send({
 				message: getErrorMessage(err)
 			});
 		} else {
@@ -67,7 +67,7 @@ exports.update = function(req, res) {
 
 	product.save(function(err) {
 		if (err) {
-			return res.send(400, {
+			return res.status(400).send({
 				message: getErrorMessage(err)
 			});
 		} else {

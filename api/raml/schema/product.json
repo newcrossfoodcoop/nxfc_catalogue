@@ -10,7 +10,10 @@
             "type": "string",
             "example": "My Product"
         },
-        "supplier": { "type": "string" },
+        "supplier": { "oneOf": [
+            { "type": "string", "required": true },
+            { "type": "object", "required": true }
+        ]},
         "brand": { "type": "string" },
         "caseRRP": { "type": "number" },
         "unitRRP": { "type": "number" },
