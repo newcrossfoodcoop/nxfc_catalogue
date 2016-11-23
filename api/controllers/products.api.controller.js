@@ -98,7 +98,7 @@ exports.delete = function(req, res) {
  * List of Products
  */
 exports.list = function(req, res) {
-    var itemsPerPage = req.query.itemsperpage || 20;
+    var itemsPerPage = parseInt(req.query.itemsperpage || 20);
     var pageNumber = req.query.pagenumber || 1;
     var sortParam = req.query.sort || 'name';
     
