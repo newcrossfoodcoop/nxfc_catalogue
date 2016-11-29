@@ -219,6 +219,7 @@ function startLogging(context, callback) {
                 ingestLog.log.apply(ingestLog,arguments); 
             };
             context.finish = function(err) { ingestLog.finish(err); };
+            callback();
         })
         .catch(callback);
         
