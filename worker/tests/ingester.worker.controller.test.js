@@ -19,7 +19,7 @@ describe('Ingester Controller Tests:', function() {
     before(function(done) {
         revert = ingester.__set__({
             makeContext: waterfallStub,
-            startLog: waterfallStub,
+            startLogging: waterfallStub,
             streamAndParse: waterfallStub,
             csvParser: waterfallStub,
             securityFormPost: waterfallStub

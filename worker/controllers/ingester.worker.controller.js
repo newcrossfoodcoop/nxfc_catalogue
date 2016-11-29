@@ -13,6 +13,10 @@ var mongoose = require('mongoose'),
     _ = require('lodash'),
     async = require('async');
 
+var path = require('path');
+
+var rsmq = require(path.resolve('./config/lib/rsmq')).queue;
+
 var debug = require('debug')('ingester');
 
 /**
@@ -107,20 +111,14 @@ function getProductAndExtend(context,record, callback) {
             product.save(function(_err) {
                 if (_err) { return callback(_err); }
                 // start scrape off
-                context.seneca.act({
-                    role: 'scraper', 
-                    cmd: 'scrape',
-                    timeout: 2 * 60 * 60 * 1000,
-                    args: { 
-                        supplierId: context.supplierId,
-                        supplierCode: supplierCode,
-                        searchSelectors: context.searchSelectors,
-                        productSelectors: context.productSelectors,
-                        searchUrlTemplate: context.ingest.searchUrlTemplate
-                    },
-                    'fatal$': false
-                });
-                return callback();
+                rsmq.send(JSON.stringify({
+                    action: 'scraper.scrape', 
+                    supplierId: context.supplierId,
+                    supplierCode: supplierCode,
+                    searchSelectors: context.searchSelectors,
+                    productSelectors: context.productSelectors,
+                    searchUrlTemplate: context.ingest.searchUrlTemplate
+                }), callback);
             });
         }
     );
@@ -210,25 +208,20 @@ function streamAndParse(context, callback) {
         .pipe(context.parser);
 }
 
-function startLog(context, callback) {
+function startLogging(context, callback) {
     
-    var ingestLog = new IngestLog({ 
-        ingest: context.ingest._id, 
-        status: 'running' 
-    });
-    
-    context.ingestLog = ingestLog;
-    context.ingestLogId = ingestLog._id;
-    
-    context.log = function() { 
-        ingestLog.log.apply(ingestLog,arguments); 
-    };
-    
-    context.finish = function(err) { ingestLog.finish(err); };
-    
-    context.ingestLog.save(function(err) {
-        callback(err,context);
-    });
+    IngestLog
+        .findById(context.ingestLogId)
+        .exec()
+        .then((ingestLog) => { 
+            context.ingestLog = ingestLog;
+            context.log = function() { 
+                ingestLog.log.apply(ingestLog,arguments); 
+            };
+            context.finish = function(err) { ingestLog.finish(err); };
+        })
+        .catch(callback);
+        
 }
 
 function makeContext(args,callback) {
@@ -248,7 +241,8 @@ function makeContext(args,callback) {
             var productSelectors = yaml.load(ingest.productSelectors);
             
             var context = {
-                ingest: ingest, 
+                ingest: ingest,
+                ingestLogId: args.ingestLog,
                 fieldMap: fieldMap,
                 searchSelectors: searchSelectors,
                 productSelectors: productSelectors,
@@ -260,17 +254,14 @@ function makeContext(args,callback) {
                 parsed: 0
             };
 	        
-	        startLog(context,callback);
+	        startLogging(context,callback);
         });
 }
 
 exports.ingest = function(args,done) {
-    var seneca = this;
     
     makeContext(args, function(err,context) {
         if (err) { return done(err); }
-    
-        context.seneca = seneca;
 
         async.waterfall([
             _.partial(securityFormPost,context),
@@ -280,14 +271,8 @@ exports.ingest = function(args,done) {
             if (err) {
                 context.finish(err);
             }
+            done(err);
         });
-        
-        // Accept the request, while the ingest carries on in the background
-        done(null, {
-            status: 'accepted',
-            ingestLogId: context.ingestLogId
-        });
-        
     });
 
 };

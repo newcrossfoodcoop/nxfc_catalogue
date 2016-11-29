@@ -89,10 +89,9 @@ function searchAndScrapeExternal(args, callback) {
  * productSelectors
  */
 
-exports.scrape = function(_args, _done) {
+exports.scrape = function(args, _done) {
     debug('hello');
     
-    var args = _args.args;
     var done = function(err) {
         if (err) {
             console.error(err);

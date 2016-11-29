@@ -5,8 +5,13 @@
  */
 var mongoose = require('mongoose'),
     Ingest = mongoose.model('Ingest'),
-    _ = require('lodash'),
-    path = require('path');
+    IngestLog = mongoose.model('IngestLog');
+
+var _ = require('lodash');
+var path = require('path');    
+var thenify = require('thenify');
+    
+var rsmq = require(path.resolve('./config/lib/rsmq')).queue;
 
 /**
  * Get the error message from error object
@@ -126,23 +131,34 @@ exports.ingestByID = function(req, res, next, id) {
 };
 
 exports.run = function(req, res, next) {
-    var seneca = req.app.locals.seneca;
-    seneca.act({
-        role: 'ingester', 
-        cmd: 'run', 
-        ingestId: req.ingest._id, 
-        limit: req.query.limit
-    }, function(err, result) {
-        if (err) {
+
+    var ingestLog = new IngestLog({ 
+        ingest: req.ingest._id, 
+        status: 'running' 
+    });
+    
+    var send = thenify(rsmq.send);
+    
+    ingestLog
+        .save()
+        .then((doc) => {
+            return send(JSON.stringify({
+                action: 'ingester.run',  
+                ingestId: req.ingest._id,
+                ingestLogId: doc._id,
+                limit: req.query.limit
+            }));
+        })
+        .then(() => {
+            res.jsonp({
+                ingestLog: ingestLog._id,
+                status: 'accepted'
+            });
+        })
+        .catch((err) => {
             console.log(err);
             res.status(500).jsonp({
                 status: err
             });
-        } else {
-            res.jsonp({
-                ingestLog: result.ingestLogId,
-                status: 'accepted'
-            });
-        }
-    });
+        });
 };

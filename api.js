@@ -6,15 +6,18 @@
 var config = require('./config/config'),
 	mongoose = require('./config/lib/mongoose'),
 	express = require('./config/lib/express'),
-	seneca = require('./config/lib/seneca');
+	rsmq = require('./config/lib/rsmq');
 
 config.app.app = 'api';
 
 // Initialize mongoose
 mongoose.connect(function (db) {
+
+    // initialise redis queue
+    var queue = rsmq.init();
+
 	// Initialize express
 	var app = express.init(db);
-    app.locals.seneca = seneca.initForApi();
 
 	// Start the app by listening on <port>
 	var port = config.api.port;
