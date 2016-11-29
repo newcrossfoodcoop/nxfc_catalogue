@@ -16,7 +16,7 @@ services:
       - "3010:3010"
     depends_on:
       - mongo
-      - catalogue_worker
+      - redis
     environment:
       - MONGO_HOST=mongo
       - REDIS_HOST=redis

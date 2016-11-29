@@ -15,7 +15,7 @@ services:
       - "3011:3011"
     depends_on:
       - mongo
-      - catalogue_worker
+      - redis
     environment:
       - MONGO_HOST=localhost
       - REDIS_HOST=localhost
