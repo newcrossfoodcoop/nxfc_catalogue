@@ -12,7 +12,7 @@ module.exports.init = function () {
     var worker = new RSMQWorker( 'rsmq_catalogue_'  + process.env.NODE_ENV, {
         host: config.redis.host,
         port: 6379,
-        timeout: 20000
+        timeout: 60000
     });
     
     module.exports.queue = worker;

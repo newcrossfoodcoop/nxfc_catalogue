@@ -28,6 +28,8 @@
     "mongoose": "^4.5.9",
     "mongoose-version": "^1.0.0",
     "morgan": "^1.7.0",
+    "pdf2json": "^1.1.7",
+    "pdf2table": "0.0.1",
     "request": "^2.74.0",
     "rsmq-worker": "^0.5.2",
     "swig": "^1.4.2",

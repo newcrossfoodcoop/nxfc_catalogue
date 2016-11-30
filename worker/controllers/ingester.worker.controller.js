@@ -106,6 +106,7 @@ function getProductAndExtend(context,record, count, callback) {
     
             product.save(function(_err) {
                 if (_err) { return callback(_err); }
+                if (product.externalUrl && !context.scrapeAll) { return callback(); }
                 // start scrape off
                 rsmq.send(JSON.stringify({
                     action: 'scraper.scrape',
@@ -254,7 +255,7 @@ exports.complete = function(args,done) {
             context.log('total records processed: ' + args.count);
             context.finish(); 
         })
-        .then(done)
+        .then(() => { done(); })
         .catch(done);
 };
 
@@ -268,6 +269,6 @@ exports.fail = function(args,done) {
             context.log('processed ' + args.count + ' records');
             context.finish(args.err); 
         })
-        .then(done)
+        .then(() => { done(); })
         .catch(done);
 };

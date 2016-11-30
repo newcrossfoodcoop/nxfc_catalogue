@@ -84,7 +84,7 @@ function searchAndScrapeExternal(args) {
 
 function logCount(ingestLogId,count) {
 
-    if (count % 10) { return Promise.resolve(); }
+    if (count % 100) { return Promise.resolve(); }
     return IngestLog
         .findById(ingestLogId)
         .exec()
