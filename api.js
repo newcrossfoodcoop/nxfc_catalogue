@@ -14,7 +14,7 @@ config.app.app = 'api';
 mongoose.connect(function (db) {
 
     // initialise redis queue
-    var queue = rsmq.init();
+    var queue = rsmq.initSupplier();
 
 	// Initialize express
 	var app = express.init(db);

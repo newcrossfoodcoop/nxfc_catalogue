@@ -21,6 +21,12 @@ module.exports = function(worker) {
             case 'scraper.scrape':
                 scraper.scrape(_data, next, id);
                 break;
+            case 'ingester.complete':
+                ingester.complete(_data, next, id);
+                break;
+            case 'ingester.fail':
+                ingester.fail(_data, next, id);
+                break;
             default:
                 next(new Error('unrecognised action: ' + _data.action));
         }

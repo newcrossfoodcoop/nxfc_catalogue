@@ -14,6 +14,8 @@ var mongoose = require('mongoose'),
     async = require('async');
 
 var path = require('path');
+var assert = require('assert');
+var thenify = require('thenify');
 
 var rsmq = require(path.resolve('./config/lib/rsmq')).queue;
 
@@ -44,23 +46,17 @@ var getErrorMessage = function(err) {
 };
 
 
-function securityFormPost(context,callback) {
+function securityFormPost(context) {
     var ingest = context.ingest;
-    if (ingest.securityType !== 'formPost') { return callback(null, context); }
+    if (ingest.securityType !== 'formPost') { return Promise.resolve(); }
     
     context.log('authenticating');
     
     var payload = yaml.load(ingest.formPostPayload);
     
-    request
-        .defaults({jar: request.jar()})
-        .post(
-            ingest.formPostUrl,
-            { form: payload }, 
-            function(err,httpResponse,body){
-                callback(err, context);
-            }
-        );
+    var post = thenify(request.defaults({jar: request.jar()}).post);
+
+    return post(ingest.formPostUrl,{ form: payload });
 }
 
 function extendProduct(product, fieldMap, record) {
@@ -93,9 +89,9 @@ function extendProduct(product, fieldMap, record) {
     return product;
 }
 
-function getProductAndExtend(context,record, callback) {
+function getProductAndExtend(context,record, count, callback) {
     var supplierCode = record[context.fieldMap.supplierCode];
-
+    
     Product.findOne(
         {supplierCode: supplierCode, supplier: context.supplierId}, 
         function(err, product) {
@@ -112,7 +108,9 @@ function getProductAndExtend(context,record, callback) {
                 if (_err) { return callback(_err); }
                 // start scrape off
                 rsmq.send(JSON.stringify({
-                    action: 'scraper.scrape', 
+                    action: 'scraper.scrape',
+                    count: count,
+                    ingestLogId: context.ingestLogId,
                     supplierId: context.supplierId,
                     supplierCode: supplierCode,
                     searchSelectors: context.searchSelectors,
@@ -124,117 +122,69 @@ function getProductAndExtend(context,record, callback) {
     );
 }
 
-function csvParser(context, callback) {
-    var ingest = context.ingest;
-    var fieldMap = context.fieldMap;
-    
-    if (!ingest.fieldMap) {
-        debug('no fieldMap for ingest, skipping csv parser');
-        return callback(null, context); 
-    }
-    
-    context.log('configuring csv parser, limit:' + context.limit);
-    
-    var parser = csv.parse({delimiter: ',', trim: true, columns: true, relax: true, relax_column_count: true});
-                
-    parser.on('readable', function(){
-        var record;
-        
-        async.whilst(
-            function(n) {
-                if (context.limit && (context.limit < context.parsed)) {
-                    context.log('Limit reached: %s', context.parsed);
-                    parser.end();
-                    return false; 
-                }
-                record = parser.read();
-                if (record) { return true; }
-                return false;
-            },
-            function(cb) {
-                debug('to extend', record);
-                context.parsed++;
-                getProductAndExtend(context,record,function(err) {
-                    if (err) {
-                        context.log('Product error: %s', err);
-                    }
-                    context.count++;
-                    cb(null,context.count);
-                });
-            }
-        );
-        
-    });
-    
-    parser.on('error', function(_err){
-        // record ingest status
-        context.log('csv parser error: %s', _err);
-        context.finish(_err);
-    });
-    
-    parser.on('finish', function(){
-        // record ingest status
-        context.totalrecords = context.count;
-        context.log('csv parsing complete %s records processed', context.count);
-        
-        // we don't need this any more and it creates leaks by holding bags of references
-        context.parser = null;
-    });
-    
-    context.parser = parser;
-    callback(null,context);
+function transformer(context) {
+
+    return function (record, callback) {
+        if (context.limit && (context.limit <= context.count)) { return callback(); }
+        context.count++;
+        debug('to extend', record);
+        getProductAndExtend(context,record, context.count, function(err) {
+            if (err) { context.log('Product error: %s', err); }
+            callback();
+        });
+    };
+
 }
 
-function streamAndParse(context, callback) {
+function streamAndParse(context) {
     var ingest = context.ingest;
     
     if (!ingest.downloadUrl) {
-        return callback('no downloadUrl',context); 
-    }
-    
-    if (!context.parser) {
-        return callback('no parser defined',context);
+        return Promise.reject('no downloadUrl');
     }
 
     context.log('stream file and parse it');
 
     debug(ingest.downloadUrl);
     
-    request
-        .defaults({jar: request.jar()})
-        .get(ingest.downloadUrl)
-        .on('finish',_.partial(callback,null,context))
-        .on('error',_.partial(callback,_,context))
-        .pipe(context.parser);
+    return new Promise((resolve, reject) => {
+        var stream = request
+            .defaults({jar: request.jar()})
+            .get(ingest.downloadUrl)
+            .pipe(csv.parse({delimiter: ',', trim: true, columns: true, relax: true, relax_column_count: true}))
+            .pipe(csv.transform(transformer(context)));
+    
+        stream
+            .on('finish',() => { resolve(); })
+            .on('error',reject);
+    });
 }
 
-function startLogging(context, callback) {
+function startLogging(context) {
     
-    IngestLog
+    return IngestLog
         .findById(context.ingestLogId)
         .exec()
-        .then((ingestLog) => { 
+        .then((ingestLog) => {
+            assert.ok(ingestLog);
             context.ingestLog = ingestLog;
             context.log = function() { 
                 ingestLog.log.apply(ingestLog,arguments); 
             };
             context.finish = function(err) { ingestLog.finish(err); };
-            callback();
-        })
-        .catch(callback);
+        });
         
 }
 
-function makeContext(args,callback) {
-    Ingest.findById(args.ingestId)
+function makeContext(args) {
+    return Ingest.findById(args.ingestId)
         //.populate('user', 'displayName')
         //.populate('supplier', 'name')
-        .exec(function(err, ingest) {
-	        if (err) { return callback(err); }
-	        if (! ingest) { return callback(
-	            new Error('Failed to load ingest ' + args.ingestId)
-	        ); }
-	        
+        .exec()
+        .then((ingest) => {
+            assert.ok(ingest, 'ingest not found: ' + args.ingestId);
+            assert.ok(ingest.fieldMap, 'ingest has no fieldMap: ' + args.ingestId);
+      
 	        debug(ingest);
 
             var fieldMap = yaml.load(ingest.fieldMap);
@@ -243,37 +193,81 @@ function makeContext(args,callback) {
             
             var context = {
                 ingest: ingest,
-                ingestLogId: args.ingestLog,
+                ingestLogId: args.ingestLogId,
                 fieldMap: fieldMap,
                 searchSelectors: searchSelectors,
                 productSelectors: productSelectors,
                 supplierId: ingest.supplier,
                 limit: args.limit,
-                count: 0,
-                totalitems: 0,
-                processed: 0,
-                parsed: 0
+                count: 0
             };
 	        
-	        startLogging(context,callback);
+	        return context;
         });
 }
 
 exports.ingest = function(args,done) {
-    
-    makeContext(args, function(err,context) {
-        if (err) { return done(err); }
 
-        async.waterfall([
-            _.partial(securityFormPost,context),
-            csvParser,
-            streamAndParse
-        ], function (err) {
-            if (err) {
-                context.finish(err);
-            }
+    console.log('Starting ingest');
+    var context;
+    makeContext(args)
+        .then((_context) => {
+            context = _context;
+            return startLogging(context);
+        })
+        .then(() => {
+            context.log('start logging');
+            return securityFormPost(context);
+        })
+        .then(() => {
+            return streamAndParse(context);
+        })
+        .then(() => {
+            context.log('queue complete item');
+            return rsmq.send(JSON.stringify({
+                action: 'ingester.complete',
+                count: context.count,
+                ingestLogId: context.ingestLogId
+            }));
+        })
+        .then(() => { done(); })
+        .catch((err) => {
+            context.log('queue fail item');
+            rsmq.send(JSON.stringify({
+                action: 'ingester.fail',
+                count: context.count,
+                ingestLogId: context.ingestLogId,
+                err: err
+            }));
             done(err);
         });
-    });
 
+};
+
+exports.complete = function(args,done) {
+    var context = {
+        ingestLogId: args.ingestLogId  
+    };
+    
+    startLogging(context)
+        .then(() => {
+            context.log('total records processed: ' + args.count);
+            context.finish(); 
+        })
+        .then(done)
+        .catch(done);
+};
+
+exports.fail = function(args,done) {
+    var context = {
+        ingestLogId: args.ingestLogId  
+    };
+
+    startLogging(context)
+        .then(() => {
+            context.log('processed ' + args.count + ' records');
+            context.finish(args.err); 
+        })
+        .then(done)
+        .catch(done);
 };

@@ -1,49 +1,52 @@
 'use strict';
 
-var async = require('async'),
-    jsdom = require('jsdom'),
-//    jquery = require('jquery'),
+var jsdom = require('jsdom'),
     swig = require('swig'),
     request = require('request'),
     _ = require('lodash');
 
+var thenify = require('thenify');
+var assert = require('assert');
+
 var mongoose = require('mongoose'),
-	Product = mongoose.model('Product');
+	Product = mongoose.model('Product'),
+	IngestLog = mongoose.model('IngestLog');
 	
 var debug = require('debug')('scraper');
 
-function _runSelectors(product, selectors, html, callback) {
-
-	// This is the only place we use the modules and they don't release memory
-	// http://stackoverflow.com/questions/13893163/jsdom-and-node-js-leaking-memory
-	// This is essentially a worker function so we don't care about speed really
-    jsdom.env({
-        html: html,
-        done: function(err,window) {
-            var $ = require('jquery')(window);
-            
-            _(selectors)
-                .keys()
-                .forEach(function(k) {
-                    if (k.match(/imageurl$/i)) {
-                        product[k] = $(html).find(selectors[k]).attr('src');
-                    } else if (k.match(/url$/i)) {
-                        product[k] = $(html).find(selectors[k]).attr('href');
-                    } else {
-                        product[k] = $(html).find(selectors[k]).html();
-                    }
-                    console.log('%s = "%s"',k,product[k]);
-                });
+function runSelectors(product, selectors, html) {
+    return new Promise((resolve, reject) => {
+	    // This is the only place we use the modules and they don't release memory
+	    // http://stackoverflow.com/questions/13893163/jsdom-and-node-js-leaking-memory
+	    // This is essentially a worker function so we don't care about speed really
+        jsdom.env({
+            html: html,
+            done: function(err,window) {
+                if (err) { return reject(err); }
                 
-            callback();
-        }
+                var $ = require('jquery')(window);
+                
+                _(selectors)
+                    .keys()
+                    .forEach(function(k) {
+                        if (k.match(/imageurl$/i)) {
+                            product[k] = $(html).find(selectors[k]).attr('src');
+                        } else if (k.match(/url$/i)) {
+                            product[k] = $(html).find(selectors[k]).attr('href');
+                        } else {
+                            product[k] = $(html).find(selectors[k]).html();
+                        }
+                        //console.log('%s = "%s"',k,product[k]);
+                    });
+                    
+                resolve();
+            }
+        });
     });
 }
 
-function searchAndScrapeExternal(args, callback) {
+function searchAndScrapeExternal(args) {
     var product = args.product = args.product || {};
-    
-    if (!args.searchUrlTemplate) { return callback('searchUrlTemplate not defined'); }
     
     var swigOpts = {
         locals: {
@@ -51,34 +54,45 @@ function searchAndScrapeExternal(args, callback) {
         }
     };
     
-    async.waterfall([
-        function(_callback) {
-            if (product.externalUrl) { return _callback(null, product.externalUrl); }
-            request.get(
-                swig.render(args.searchUrlTemplate, swigOpts),
-                function(err,res,body) {
-                    if (err) { return _callback(err); }
-                    _runSelectors(product, args.searchSelectors, body, function() {
-                        _callback(null, product.externalUrl);
-                    });
-                }
-            );
-        },
-        function(link,_callback) {
-            if (!link) { return _callback('product not found'); }
-            request.get(
-                link, 
-                function(err,res,body) {
-                    if (err) { return _callback(err); }
-                    _runSelectors(product, args.productSelectors, body, _callback);
-                }
-            );
-        }
-    ], function(err) {
-        var result = null;
-        if (err) { result = 'searchAndScrape error:' + err; }
-        callback(result, args);
-    });
+    var get = thenify(request.get);
+    
+    return new Promise(
+        (resolve, reject) => {
+            if (!args.searchUrlTemplate) { return reject('searchUrlTemplate not defined'); }
+            resolve(product.externalUrl);
+        })
+        .then((link) => {
+            if (link) { return link; }
+            return get(swig.render(args.searchUrlTemplate, swigOpts))
+                .then((res) => {
+                    return runSelectors(product, args.searchSelectors, res[1]);
+                })
+                .then(() => {
+                    return product.externalUrl;
+                });
+        })
+        .then((link) => {
+            assert.ok(link, 'product not found on site: ' + product.supplierCode);
+            return get(link);
+        })
+        .then((res) => {
+            return runSelectors(product, args.productSelectors, res[1]);
+        })
+        .catch((err) => { throw new Error('searchAndScrape error:' + err); });
+    
+}
+
+function logCount(ingestLogId,count) {
+
+    if (count % 10) { return Promise.resolve(); }
+    return IngestLog
+        .findById(ingestLogId)
+        .exec()
+        .then((ingestLog) => {
+            assert.ok(ingestLog, 'ingestLog not found: ' + ingestLogId);
+            return ingestLog.log('scraped ' + count + ' so far...');
+        });
+        
 }
 
 /*
@@ -89,45 +103,25 @@ function searchAndScrapeExternal(args, callback) {
  * productSelectors
  */
 
-exports.scrape = function(args, _done) {
-    debug('hello');
-    
-    var done = function(err) {
-        if (err) {
-            console.error(err);
-        }
-        _done();
-    };
-    
-    console.log(args);
-    
-    //done(null, {foo: 'bar'});
+exports.scrape = function(args, done) {
 
-    Product.findOne(
-        {supplierCode: args.supplierCode, supplier: args.supplierId}, 
-        function(err, product) {
-            if (err) { return done(err); }
-            if (!product) { return done('Product not found: ' + args.supplierCode); }
-            
-            //console.log('product retrieved:', product._id);
-            
-            args.product = product;
-            
-            searchAndScrapeExternal(args, function(_err) {
-//                if (_err) { context.ingestLog.log('queue item error: %s', _err); }
-                if (_err) { console.log('queue item error: %s', _err); }
-                product.save(function(__err) {
-                    if (__err) { return done(__err); }
-//                    context.processed++;
-                    return done();
-                });
-            });
-        }
-    );
-
-    if (process.memoryUsage().heapUsed > 100e6) {
+    if (process.memoryUsage().heapUsed > 250e6) {
         console.error('process should exit:', process.memoryUsage());
         //process.exit(0);
     }
+    
+    Product
+        .findOne({supplierCode: args.supplierCode, supplier: args.supplierId})
+        .then((product) => {
+            assert.ok(product, 'Product not found: ' + args.supplierCode);
+        
+            args.product = product;
+            
+            return searchAndScrapeExternal(args);
+        })
+        .then(() => { return args.product.save(); })
+        .then(() => { return logCount(args.ingestLogId,args.count); })
+        .then(() => { done(); })
+        .catch(done);
 
 };
