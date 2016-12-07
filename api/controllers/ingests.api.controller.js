@@ -46,7 +46,7 @@ exports.create = function(req, res) {
 
 	ingest.save(function(err) {
 		if (err) {
-			return res.send(400, {
+			return res.status(400).send({
 				message: getErrorMessage(err)
 			});
 		} else {
@@ -72,7 +72,7 @@ exports.update = function(req, res) {
 
 	ingest.save(function(err) {
 		if (err) {
-			return res.send(400, {
+			return res.status(400).send({
 				message: getErrorMessage(err)
 			});
 		} else {
@@ -89,7 +89,7 @@ exports.delete = function(req, res) {
 
 	ingest.remove(function(err) {
 		if (err) {
-			return res.send(400, {
+			return res.status(400).send({
 				message: getErrorMessage(err)
 			});
 		} else {
@@ -106,7 +106,7 @@ exports.list = function(req, res) {
         //.populate('user', 'displayName')
         .exec(function(err, ingests) {
 		    if (err) {
-			    return res.send(400, {
+			    return res.status(400).send({
 				    message: getErrorMessage(err)
 			    });
 		    } else {

@@ -9,6 +9,7 @@ schemas:
   - Product: !include schema/product.json
   - Ingest: !include schema/ingest.json
   - IngestLog: !include schema/ingest-log.json
+  - Order: !include schema/order.json
 
 resourceTypes:
   - base:
@@ -103,7 +104,8 @@ resourceTypes:
         example: |
           {
             "description": "Description of My Supplier",
-            "name": "My Supplier Name"
+            "name": "My Supplier Name",
+            "customerId": 1234
           }
   /{supplierId}:
     type: { typedMember: { schema: Supplier } }
@@ -301,4 +303,30 @@ resourceTypes:
                         }
                       }
                     }
-      
+
+/orders:
+  displayName: Orders
+  type: { typedMemberCollection: { schema: Order } }
+  post:
+    body:
+      application/json:
+        example: |
+          {
+            "supplier": "57c4b1ba1abb0114001963c5",
+            "deliveryAddress": "The delivery Address",
+            "deliveryMessage": "Please deliver on the 9th",
+            "items": [{
+              "product": "57c4b1ba1abb0114001963c5",
+              "quantity": 5
+            }],
+            "stockOrderId": "57c4b1ba1abb0114001963c5"
+          }
+  /{orderId}:
+    type: { typedMember: { schema: Order } }
+    /csv:
+      description: "Returns a csv file of this order"
+      get:
+        responses:
+          200:
+            body:
+              text/csv:

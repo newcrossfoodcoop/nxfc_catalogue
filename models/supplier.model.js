@@ -32,6 +32,9 @@ var supplierSchema = new Schema({
 	user: {
 		type: Schema.ObjectId,
 		ref: 'User'
+	},
+	customerId: {
+	    type: String
 	}
 });
 

@@ -32,6 +32,7 @@
     "pdf2table": "0.0.1",
     "request": "^2.74.0",
     "rsmq-worker": "^0.5.2",
+    "shortid": "^2.2.6",
     "swig": "^1.4.2",
     "thenify": "^3.2.1",
     "yaml-js": "^0.1.3"

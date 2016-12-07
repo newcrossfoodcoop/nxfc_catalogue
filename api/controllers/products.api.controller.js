@@ -85,7 +85,7 @@ exports.delete = function(req, res) {
 
 	product.remove(function(err) {
 		if (err) {
-			return res.send(400, {
+			return res.status(400).send({
 				message: getErrorMessage(err)
 			});
 		} else {
@@ -133,7 +133,7 @@ exports.list = function(req, res) {
         .limit(itemsPerPage)
         .exec(function(err, products) {
 		    if (err) {
-			    return res.send(400, {
+			    return res.status(400).send({
 				    message: getErrorMessage(err)
 			    });
 		    } else {
@@ -171,7 +171,7 @@ exports.count = function(req, res) {
 
     function cb(err, count) {
 	    if (err) {
-		    return res.send(400, {
+		    return res.status(400).send({
 			    message: getErrorMessage(err)
 		    });
 	    } else {
@@ -195,7 +195,7 @@ exports.count = function(req, res) {
 exports.tags = function(req, res) {
     Product.find().distinct('tags', function(err, tags){
     	if (err) {
-		    return res.send(400, {
+		    return res.status(400).send({
 			    message: getErrorMessage(err)
 		    });
 	    } else {
@@ -207,7 +207,7 @@ exports.tags = function(req, res) {
 exports.brands = function(req, res) {
     Product.find().distinct('brand', function(err, brands){
     	if (err) {
-		    return res.send(400, {
+		    return res.status(400).send({
 			    message: getErrorMessage(err)
 		    });
 	    } else {
@@ -219,7 +219,7 @@ exports.brands = function(req, res) {
 exports.supplierCodes = function(req, res) {
     Product.find().distinct('supplierCode', function(err, supplierCodes){
     	if (err) {
-		    return res.send(400, {
+		    return res.status(400).send({
 			    message: getErrorMessage(err)
 		    });
 	    } else {

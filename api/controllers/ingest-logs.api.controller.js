@@ -48,7 +48,7 @@ exports.list = function(req, res) {
         .limit( req.query.limit || 5)
         .exec(function(err, ingestLogs) {
 		    if (err) {
-			    return res.send(400, {
+			    return res.status(400).send({
 				    message: getErrorMessage(err)
 			    });
 		    } else {
@@ -64,7 +64,7 @@ exports.listEntries = function(req, res) {
     IngestLogEntry.find({ingestLog: req.ingestLog._id}).sort('date')
         .exec(function(err, ingestLogEntries) {
 		    if (err) {
-			    return res.send(400, {
+			    return res.status(400).send({
 				    message: getErrorMessage(err)
 			    });
 		    } else {
