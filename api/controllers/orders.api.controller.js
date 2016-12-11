@@ -78,7 +78,7 @@ exports.csv = function(req, res) {
                 .each((item) => {
                     input.push([
                         item.product.supplierCode,
-                        item.product.name + ' (' + item.product.caseSize + ')',
+                        item.product.descName,
                         item.quantity + '_c'
                     ]);
                 });
