@@ -79,7 +79,7 @@ ProductSchema.plugin(mongooseVersion,{collection: 'product_history', strategy: '
 ProductSchema.virtual('vatRate').get(() => { return 0.2; });
 ProductSchema.virtual('marginRate').get(() => { return 0; });
 
-ProductSchema.virtual('vat').get(function() {
+ProductSchema.virtual('supplierVat').get(function() {
     var product = this;
     
     if (!product.VATcode) { return 0; }
@@ -89,6 +89,23 @@ ProductSchema.virtual('vat').get(function() {
     else {
         throw new Error(util.format('Unrecognised VATcode: %s', product.VATcode));
     }
+});
+
+ProductSchema.virtual('vat').get(function() {
+    var product = this;
+    
+    if (!product.VATcode) { return 0; }
+    if (product.VATcode === 1) {
+        return Number(((product.supplierPrice + product.margin) * product.vatRate).toFixed(2));
+    }
+    else {
+        throw new Error(util.format('Unrecognised VATcode: %s', product.VATcode));
+    }
+});
+
+ProductSchema.virtual('marginVat').get(function() {
+    var product = this;
+    return product.vat - product.supplierVat;
 });
 
 ProductSchema.virtual('margin').get(function () {

@@ -26,7 +26,7 @@
         "mainImageUrl": { "type": "string" },
         "thumbImageUrl": { "type": "string" },
         "externalUrl": { "type": "string" },
-        "VATcode": { "type": "string" },
+        "VATcode": { "type": "integer" },
         "FGOSV": { "type": "string" },
         "unitBarcode": { "type": "integer" }, 
         "caseBarcode": { "type": "integer" }
