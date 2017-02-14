@@ -10,5 +10,8 @@ module.exports = {
     },
     api: {
         port: 3011
+    },
+    pricing: {
+        marginRate: 0
     }
 };

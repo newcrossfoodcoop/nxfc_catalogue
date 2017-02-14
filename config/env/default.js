@@ -38,5 +38,9 @@ module.exports = {
     api: {
         host: 'localhost',
         port: 3010
+    },
+    pricing: {
+        marginRate: 0.03,
+        vatRate: 0.2
     }
 };

@@ -9,6 +9,9 @@ var mongoose = require('mongoose'),
     mongooseVersion = require('mongoose-version'),
 	Schema = mongoose.Schema;
 
+var path = require('path');
+var config = require(path.resolve('./config/config'));
+
 var ProductOptionSchema = new Schema({
     name: String,
     values: [ String ]
@@ -76,8 +79,8 @@ var ProductSchema = new Schema({
 
 ProductSchema.plugin(mongooseVersion,{collection: 'product_history', strategy: 'collection'});
 
-ProductSchema.virtual('vatRate').get(() => { return 0.2; });
-ProductSchema.virtual('marginRate').get(() => { return 0; });
+ProductSchema.virtual('vatRate').get(() => { return config.pricing.vatRate; });
+ProductSchema.virtual('marginRate').get(() => { return config.pricing.marginRate; });
 
 ProductSchema.virtual('supplierVat').get(function() {
     var product = this;
