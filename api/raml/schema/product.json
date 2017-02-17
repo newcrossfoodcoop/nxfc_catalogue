@@ -4,6 +4,8 @@
     "description": "Product",
     "properties": {
         "tags": { "type": "array" },
+        "categories": { "type": "array" },
+        "published": { "type": "boolean" },
         "annotation": { "type": "string" },
         "description": { "type": "string" },
         "name": {

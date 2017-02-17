@@ -1,8 +1,9 @@
-var hooks = require('hooks'),
-    assert = require('assert');
-
+var hooks = require('hooks');
+var assert = require('assert');
+var _ = require('lodash');
 var request = require('request');
 var url = require('url');
+
 var debug = require('debug')('hooks');
 
 var store = {};
@@ -28,6 +29,27 @@ hooks.after('POST /suppliers -> 200', function (test, done) {
 
 hooks.before('GET /products/{productId} -> 200', function (test, done) {
     test.request.params.productId = store.product._id;
+    done();
+});
+
+var unpublished_product;
+
+hooks.after('POST /products -> 200', function (test, done) {
+    var params = _.clone(test.request.body);
+    params.published = false
+
+    request.post(
+        test.request.server + test.request.path,
+        {form: params, json: true},
+        function(err,res,bod) {
+            unpublished_product = bod;
+            done();
+        }
+    );
+});
+
+hooks.after('GET /products/all -> 200', function (test, done) {
+    assert(_.reject(test.response.body,'published').length > 0);
     done();
 });
 

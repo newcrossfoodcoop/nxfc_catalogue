@@ -25,7 +25,7 @@ var ProductSchema = new Schema({
 	name: {
 		type: String,
 		default: '',
-		required: 'Please fill Product name',
+		required: true,
 		trim: true
 	},
 	description: {
@@ -73,8 +73,17 @@ var ProductSchema = new Schema({
 	caseBarcode: Number,
 	tags: [{
 	    type: String,
-	    required: 'A tag cannot be empty'
-	}]
+	    required: true
+	}],
+	categories: [{
+	    type: String,
+	    required: true
+	}],
+	published: {
+	    type: Boolean,
+	    required: true,
+	    default: true
+	}
 });
 
 ProductSchema.plugin(mongooseVersion,{collection: 'product_history', strategy: 'collection'});

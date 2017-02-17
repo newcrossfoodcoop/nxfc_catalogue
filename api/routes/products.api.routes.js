@@ -6,7 +6,7 @@ module.exports = function(app) {
 
 	// Products Routes
 	app.route('/api/products')
-	    .get(products.list)
+	    .get(products.listPublished)
 	    .put(products.listByIds)
 		.post(products.create);
 
@@ -15,6 +15,12 @@ module.exports = function(app) {
 	
 	app.route('/api/products/tags')
 		.get(products.tags);
+		
+	app.route('/api/products/categories')
+		.get(products.categories);
+		
+	app.route('/api/products/all')
+		.get(products.list);
 		
 	app.route('/api/products/brands')
 		.get(products.brands);

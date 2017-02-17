@@ -159,6 +159,8 @@ resourceTypes:
         type: "string"
       tags:
         type: "string"
+      categories:
+        type: "string"
       id:
         type: "string"
       sort:
@@ -180,6 +182,19 @@ resourceTypes:
             application/json:
               example: |
                 { "count": 42 }
+  /categories:
+    get:
+      description: list of distinct product categories
+      responses:
+        200:
+          body:
+            application/json:
+              schema: |
+                {
+                  "$schema": "http://json-schema.org/draft-03/schema#",
+                  "type": "array",
+                  "properties": "string"
+                }
   /tags:
     get:
       description: list of distinct product tags
@@ -219,6 +234,40 @@ resourceTypes:
                   "type": "array",
                   "properties": "string"
                 }
+  /all:
+    get:
+      description: search products, including unpublished products
+      queryParameters:
+        itemsperpage:
+          type: "integer"
+          default: 20
+        pagenumber:
+          type: "integer"
+          default: 1
+        textsearch:
+          type: "string"
+        tags:
+          type: "string"
+        categories:
+          type: "string"
+        id:
+          type: "string"
+        sort:
+          type: "string"
+          default: "name"
+        published:
+          type: "boolean"
+      responses:
+        200:
+          body:
+            application/json:
+              schema: |
+                {
+                  "$schema": "http://json-schema.org/draft-03/schema#", 
+                  "type": "array", 
+                  "properties": { "$ref": "Product" } 
+                }
+              example: "[]"
   /{productId}:
     type: { typedMember: { schema: Product } }
 

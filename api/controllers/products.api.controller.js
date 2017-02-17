@@ -94,26 +94,35 @@ exports.delete = function(req, res) {
 	});
 };
 
-/**
- * List of Products
- */
-exports.list = function(req, res) {
-    var itemsPerPage = parseInt(req.query.itemsperpage || 20);
-    var pageNumber = req.query.pagenumber || 1;
-    var sortParam = req.query.sort || 'name';
+function buildListQuery(queryParams) {
+    var itemsPerPage = parseInt(queryParams.itemsperpage || 20);
+    var pageNumber = queryParams.pagenumber || 1;
+    var sortParam = queryParams.sort || 'name';
     
     var query;
     var qp1 = {};
     var qp2;
     
-    if (req.query.textsearch) {
-        qp1.$text = { $search: req.query.textsearch };
+    if (queryParams.published) {
+        qp1.published = true;
+    }
+    
+    if (queryParams.textsearch) {
+        qp1.$text = { $search: queryParams.textsearch };
         qp2 = { score : { $meta: 'textScore' } };
         sortParam = { score : { $meta : 'textScore' } };
-    } else if (req.query.tags) {
-        qp1.tags = { $in: req.query.tags };
-    } else if (req.query.ids) {
-        var _ids = _.isArray(req.query.ids) ? req.query.ids : [req.query.ids];
+    }
+    
+    if (queryParams.tags) {
+        qp1.tags = { $in: queryParams.tags };
+    }
+    
+    if (queryParams.categories) {
+        qp1.categories = { $in: queryParams.categories };
+    }
+    
+    if (queryParams.ids) {
+        var _ids = _.isArray(queryParams.ids) ? queryParams.ids : [queryParams.ids];
         var ids = _.map(_ids, function (id) {
             return mongoose.Types.ObjectId(id);
         });
@@ -126,20 +135,43 @@ exports.list = function(req, res) {
         query = Product.find(qp1);
     }
     
-    query
+    return query
         .sort(sortParam)
         .populate('supplier', 'name')
         .skip(itemsPerPage * (pageNumber - 1))
-        .limit(itemsPerPage)
-        .exec(function(err, products) {
-		    if (err) {
-			    return res.status(400).send({
-				    message: getErrorMessage(err)
-			    });
-		    } else {
-			    res.jsonp(products);
-		    }
-	    });
+        .limit(itemsPerPage);
+}
+
+/**
+ * List of Products
+ */
+exports.list = function(req, res) {
+    
+    buildListQuery(req.query)
+        .exec()
+        .then((products) => {
+            res.jsonp(products);
+        })
+        .catch((err) => {
+            res.status(400).send({
+                message: getErrorMessage(err)
+            });
+        });
+};
+
+exports.listPublished = function(req, res) {
+    req.query.published = true;
+    
+    buildListQuery(req.query)
+        .exec()
+        .then((products) => {
+            res.jsonp(products);
+        })
+        .catch((err) => {
+            res.status(400).send({
+                message: getErrorMessage(err)
+            });
+        });
 };
 
 exports.listByIds = function(req, res) {
@@ -194,6 +226,18 @@ exports.count = function(req, res) {
 
 exports.tags = function(req, res) {
     Product.find().distinct('tags', function(err, tags){
+    	if (err) {
+		    return res.status(400).send({
+			    message: getErrorMessage(err)
+		    });
+	    } else {
+		    res.jsonp(tags);
+	    }
+    });
+};
+
+exports.categories = function(req, res) {
+    Product.find().distinct('categories', function(err, tags){
     	if (err) {
 		    return res.status(400).send({
 			    message: getErrorMessage(err)
