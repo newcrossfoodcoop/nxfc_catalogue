@@ -14,6 +14,8 @@ module.exports = function(worker) {
     worker.on('message', function( message, next, id ){
         var _data = JSON.parse( message );
         
+        console.log(_data);
+        
         switch(_data.action) {
             case 'ingester.run':
                 ingester.ingest(_data, next, id);

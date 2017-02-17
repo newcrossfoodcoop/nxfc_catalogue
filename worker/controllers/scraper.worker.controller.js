@@ -122,6 +122,6 @@ exports.scrape = function(args, done) {
         .then(() => { return args.product.save(); })
         .then(() => { return logCount(args.ingestLogId,args.count); })
         .then(() => { done(); })
-        .catch(done);
+        .catch((err) => { done(err); });
 
 };

@@ -159,10 +159,13 @@ resourceTypes:
         type: "string"
       tags:
         type: "string"
+        repeat: true
       categories:
         type: "string"
+        repeat: true
       id:
         type: "string"
+        repeat: true
       sort:
         type: "string"
         default: "name"
@@ -173,6 +176,10 @@ resourceTypes:
         tags: 
           description: comma delimited tag names
           type: string
+          repeat: true
+        categories: 
+          type: string
+          repeat: true
         textsearch:
           description: search string 
           type: string
@@ -248,10 +255,13 @@ resourceTypes:
           type: "string"
         tags:
           type: "string"
+          repeat: true
         categories:
           type: "string"
+          repeat: true
         id:
           type: "string"
+          repeat: true
         sort:
           type: "string"
           default: "name"

@@ -65,15 +65,44 @@ function extendProduct(product, fieldMap, record) {
     _(fieldMap)
         .keys()
         .forEach(function(k) {
-            if (k === 'tags') {
-                if (product) {
-                    values[k] = _.union(product.tags, [record[fieldMap[k]]]);
-                } else {
-                    values[k] = [record[fieldMap[k]]];
-                }
-            }
-            else {
-                values[k] = record[fieldMap[k]];
+            var fieldValue = record[fieldMap[k]];
+            
+            switch (k) {
+                case 'categories':
+                    // unpublish chilled or frozen products
+                    if (fieldValue && fieldValue.match(/\(chilled|frozen\)/i)) {
+                        values.published = false;
+                        break;
+                    }
+                    
+                    if (fieldValue && fieldValue.match(/WINES|ALCOHOLIC DRINKS/)) {
+                        values.published = false;
+                        break;
+                    }
+                    
+                    var categories = fieldValue.split(';');
+                    values[k] = (product ? _.union(product.categories,categories) : categories);
+                    break;
+                case 'tags':
+                    var columns = (_.isArray(fieldMap[k]) ? fieldMap[k] : [fieldMap[k]]);
+                    var tags = [];
+                    _(columns).forEach((e) => {
+                        var expr = e.split('=');
+                        if (record[expr[0]]) {
+                            tags.push(expr[1]);
+                        }
+                    });
+                    values[k] = (product ? _.union(product.tags,tags) : tags);
+                    break;
+                case 'annotation':
+                    // unpublish product with alcohol
+                    if (fieldValue && fieldValue.match(/abv/i)) {
+                        values.published = false;
+                    }
+                    
+                    /* falls through */
+                default:
+                    values[k] = fieldValue;
             }
         });
     
@@ -107,6 +136,8 @@ function getProductAndExtend(context,record, count, callback) {
             product.save(function(_err) {
                 if (_err) { return callback(_err); }
                 if (product.externalUrl && !context.scrapeAll) { return callback(); }
+                if (!context.ingest.searchUrlTemplate) { return callback(); }
+                
                 // start scrape off
                 rsmq.send(JSON.stringify({
                     action: 'scraper.scrape',

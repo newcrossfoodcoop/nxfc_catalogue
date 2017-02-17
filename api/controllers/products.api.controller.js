@@ -114,11 +114,13 @@ function buildListQuery(queryParams) {
     }
     
     if (queryParams.tags) {
-        qp1.tags = { $in: queryParams.tags };
+        var tags = (_.isArray(queryParams.tags) ? queryParams.tags : [queryParams.tags]);
+        qp1.$and = _.map(tags, (tag) => { return {tags: tag}; });
+//        qp1.tags = { $in: (_.isArray(queryParams.tags) ? queryParams.tags : [queryParams.tags]) };
     }
     
     if (queryParams.categories) {
-        qp1.categories = { $in: queryParams.categories };
+        qp1.categories = { $in: (_.isArray(queryParams.categories) ? queryParams.categories : [queryParams.categories] ) };
     }
     
     if (queryParams.ids) {
@@ -211,16 +213,22 @@ exports.count = function(req, res) {
 	    }
     }
     
-    var query;
+    var query = { published: true };
+    
     if (req.query.textsearch) {
-        Product.count(
-            { $text : { $search : req.query.textsearch } }, cb
-        );
-    } else if (req.query.tags) {
-        Product.count({ $in: req.query.tags }, cb);
-    } else {
-        Product.count({}, cb);
+        query.$text = { $search : req.query.textsearch };
     }
+    
+    if (req.query.tags) {
+        var tags = (_.isArray(req.query.tags) ? req.query.tags : [req.query.tags]);
+        query.$and = _.map(tags, (tag) => { return {tags: tag}; });
+    }
+    
+    if (req.query.categories) {
+        query.categories = { $in : (_.isArray(req.query.categories) ? req.query.categories : [req.query.categories]) };
+    }
+    
+    Product.count(query, cb);
     
 };
 
