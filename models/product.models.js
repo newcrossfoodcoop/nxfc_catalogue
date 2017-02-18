@@ -142,6 +142,6 @@ ProductSchema.virtual('descName').get(function () {
 ProductSchema.set('toJSON', { getters: true });
 ProductSchema.set('toObject', { getters: true });
 
-ProductSchema.index({ name: 'text', supplierCode: 'text', description: 'text', tags: 'text', brand: 'text', supplier: 'text' });
+ProductSchema.index({ name: 'text', supplierCode: 'text', description: 'text', tags: 'text', brand: 'text', supplier: 'text', published: 'boolean' });
 
 mongoose.model('Product', ProductSchema);
