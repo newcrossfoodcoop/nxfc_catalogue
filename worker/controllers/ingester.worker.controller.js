@@ -81,7 +81,8 @@ function extendProduct(product, fieldMap, record) {
                     }
                     
                     var categories = fieldValue.split(';');
-                    values[k] = (product ? _.union(product.categories,categories) : categories);
+                    values[k] = categories;
+//                    values[k] = (product ? _.union(product.categories,categories) : categories);
                     break;
                 case 'tags':
                     var columns = (_.isArray(fieldMap[k]) ? fieldMap[k] : [fieldMap[k]]);
@@ -92,7 +93,8 @@ function extendProduct(product, fieldMap, record) {
                             tags.push(expr[1]);
                         }
                     });
-                    values[k] = (product ? _.union(product.tags,tags) : tags);
+                    values[k] = tags;
+//                    values[k] = (product ? _.union(product.tags,tags) : tags);
                     break;
                 case 'annotation':
                     // unpublish product with alcohol
