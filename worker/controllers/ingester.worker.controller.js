@@ -70,14 +70,13 @@ function extendProduct(product, fieldMap, record) {
             switch (k) {
                 case 'categories':
                     // unpublish chilled or frozen products
-                    if (fieldValue && fieldValue.match(/\(chilled|frozen\)/i)) {
+                    if (fieldValue && fieldValue.match(/chilled|frozen/i)) {
                         values.published = false;
-                        break;
                     }
                     
-                    if (fieldValue && fieldValue.match(/WINES|ALCOHOLIC DRINKS/)) {
+                    // unpublish chilled or frozen products
+                    if (fieldValue && fieldValue.match(/WINES|ALCOHOLIC DRINKS|BEERS|CIDERS|SPIRITS & LIQUEURS|PORT & DESSERT WINE|SHERRY/)) {
                         values.published = false;
-                        break;
                     }
                     
                     var categories = fieldValue.split(';');
@@ -97,7 +96,7 @@ function extendProduct(product, fieldMap, record) {
 //                    values[k] = (product ? _.union(product.tags,tags) : tags);
                     break;
                 case 'annotation':
-                    // unpublish product with alcohol
+                    // unpublish products with alcohol
                     if (fieldValue && fieldValue.match(/abv/i)) {
                         values.published = false;
                     }
