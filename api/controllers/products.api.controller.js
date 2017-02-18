@@ -233,7 +233,7 @@ exports.count = function(req, res) {
 };
 
 exports.tags = function(req, res) {
-    Product.find().distinct('tags', function(err, tags){
+    Product.find({published: true}).distinct('tags', function(err, tags){
     	if (err) {
 		    return res.status(400).send({
 			    message: getErrorMessage(err)
@@ -245,7 +245,7 @@ exports.tags = function(req, res) {
 };
 
 exports.categories = function(req, res) {
-    Product.find().distinct('categories', function(err, tags){
+    Product.find({published: true}).distinct('categories', function(err, tags){
     	if (err) {
 		    return res.status(400).send({
 			    message: getErrorMessage(err)
@@ -257,7 +257,7 @@ exports.categories = function(req, res) {
 };
 
 exports.brands = function(req, res) {
-    Product.find().distinct('brand', function(err, brands){
+    Product.find({published: true}).distinct('brand', function(err, brands){
     	if (err) {
 		    return res.status(400).send({
 			    message: getErrorMessage(err)
@@ -269,7 +269,7 @@ exports.brands = function(req, res) {
 };
 
 exports.supplierCodes = function(req, res) {
-    Product.find().distinct('supplierCode', function(err, supplierCodes){
+    Product.find({published: true}).distinct('supplierCode', function(err, supplierCodes){
     	if (err) {
 		    return res.status(400).send({
 			    message: getErrorMessage(err)
