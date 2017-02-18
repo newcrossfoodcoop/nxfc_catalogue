@@ -88,31 +88,34 @@ var ProductSchema = new Schema({
 
 ProductSchema.plugin(mongooseVersion,{collection: 'product_history', strategy: 'collection'});
 
-ProductSchema.virtual('vatRate').get(() => { return config.pricing.vatRate; });
+// TODO: move other vat rates to config
+ProductSchema.virtual('vatRate').get(function() {
+    var product = this;
+
+    if (!product.VATcode) { return 0; }
+    
+    switch (product.VATcode) {
+        case 1:
+            return config.pricing.vatRate;
+        case 2:
+            return 0.12;
+        case 5:
+            return 0.05;
+    }
+    
+    throw new Error(util.format('Unrecognised VATcode: %s', product.VATcode));
+});
+
 ProductSchema.virtual('marginRate').get(() => { return config.pricing.marginRate; });
 
 ProductSchema.virtual('supplierVat').get(function() {
     var product = this;
-    
-    if (!product.VATcode) { return 0; }
-    if (product.VATcode === 1) {
-        return Number((product.supplierPrice * product.vatRate).toFixed(2));
-    }
-    else {
-        throw new Error(util.format('Unrecognised VATcode: %s', product.VATcode));
-    }
+    return Number((product.supplierPrice * product.vatRate).toFixed(2));
 });
 
 ProductSchema.virtual('vat').get(function() {
     var product = this;
-    
-    if (!product.VATcode) { return 0; }
-    if (product.VATcode === 1) {
-        return Number(((product.supplierPrice + product.margin) * product.vatRate).toFixed(2));
-    }
-    else {
-        throw new Error(util.format('Unrecognised VATcode: %s', product.VATcode));
-    }
+    return Number(((product.supplierPrice + product.margin) * product.vatRate).toFixed(2));
 });
 
 ProductSchema.virtual('marginVat').get(function() {
